@@ -20,8 +20,22 @@
  * THE SOFTWARE.
  */
 
+/*
+ Goal: Understand Pattern Matching in Swift
+ it enables to design rules that match values against each other. 
+ 
+ The tutorial covers the following patterns:
+ Tuple pattern
+ Type-casting patterns
+ Wildcard pattern
+ Optional pattern
+ Enumeration case pattern
+ Expression pattern
+ */
+
 import Foundation
 
+//Generate random days for the schedule
 func random_uniform(value: Int) -> Int {
   return Int(arc4random_uniform(UInt32(value)))
 }
@@ -32,3 +46,41 @@ let url = URL(fileURLWithPath: file)
 let data = try! Data(contentsOf: url)
 let json = try! JSONSerialization.jsonObject(with: data) as! [JSONObject]
 print(json)
+
+enum Day: Int {
+    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+}
+
+class Tutorial {
+    
+    //always a title
+    let title: String
+    //optional for unschedule tutorials
+    var day: Day?
+    
+    init(title: String, day: Day? = nil) {
+        self.title = title
+        self.day = day
+    }
+}
+
+var tutorials: [Tutorial] = []
+
+//convert the array of dictionaries/objs in JSON format into an array of Tutorial objs
+//user maps to transform the array of ditionaries to an array of tutorials
+//how to do this with for
+for jsonObject in json {
+    var title = ""
+    var scheduleDay: Day? = nil
+    
+    for (key,value) in jsonObject {
+        
+    }
+    guard let title = jsonObject["title"] as? String else {
+        print("no title")
+        break
+    }
+    print(title)
+    tutorials.append(Tutorial(title: title, day: jsonObject["day"] as Day))
+}
+
