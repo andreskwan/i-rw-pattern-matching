@@ -57,6 +57,31 @@ enum Day: Int {
     case monday, tuesday, wednesday, thursday, friday, saturday, sunday
 }
 
+//Enumeration Case Pattern
+extension Day {
+    
+    var name: String {
+        switch self {
+        case .monday:
+            return "Monday"
+        case .tuesday:
+            return "Tuesday"
+        case .wednesday:
+            return "Wednesday"
+        case .thursday:
+            return "Thursday"
+        case .friday:
+            return "Friday"
+        case .saturday:
+            return "Saturday"
+        case .sunday:
+            return "Sunday"
+        }
+    }
+}
+
+
+
 //Model
 class Tutorial {
     
@@ -78,6 +103,39 @@ extension Tutorial: CustomStringConvertible {
             scheduled = ", scheduled on \(day)"
         }
         return title + scheduled
+    }
+}
+//Expression Pattern
+//overload the pattern matching operator in order to change its default functionality and make it work for days as well
+func ~=(lhs: Int, rhs: Day) -> Bool {
+    return lhs == rhs.rawValue + 1
+}
+//Thanks to the overloaded pattern matching operator, the day object can now be matched to integer expressions. This is the expression pattern in action.
+
+extension Tutorial {
+    
+    var order: String {
+        guard let day = day else {
+            return "not scheduled"
+        }
+        switch day {
+        case 1:
+            return "first"
+        case 2:
+            return "second"
+        case 3:
+            return "third"
+        case 4:
+            return "fourth"
+        case 5:
+            return "fifth"
+        case 6:
+            return "sixth"
+        case 7:
+            return "seventh"
+        default:
+            fatalError("invalid day value")
+        }
     }
 }
 
