@@ -95,11 +95,13 @@ for jsonObject in json {
         switch (key, value) {
         // type-casting pattern
         //validate if title is a string with -> is type-casting
-        case ("title", is  String):
+        case ("title", is String):
+            //is String -> value is String
             //type-cast when valid
             currentTitle = value as! String
         //validate if day is a string with -> as type-casting
         case ("day", let dayString as String):
+            //casting value as String
             //convert dayString into INT then into a Day(enum)
             if let dayInt = Int(dayString), let day = Day(rawValue: dayInt - 1) {
                 currentDay = day
@@ -154,7 +156,7 @@ let sortedTutorials = tutorials.sorted { (tutorialA, tutorialB) -> Bool in
 }
 print(sortedTutorials)
 
-//Sorting with Optional Pattern Matching 
+//Sorting with Optional Pattern Matching
 tutorials.sort{
     switch ($0.day, $1.day) {
     //if not schedule, organize by alphabetical order
