@@ -40,6 +40,9 @@ func random_uniform(value: Int) -> Int {
   return Int(arc4random_uniform(UInt32(value)))
 }
 
+// code to parse JSON 
+// returns and array of dictionaries 
+
 typealias JSONObject = [String: AnyObject]
 let file = Bundle.main.path(forResource:"tutorials", ofType: "json")!
 let url = URL(fileURLWithPath: file)
@@ -47,10 +50,12 @@ let data = try! Data(contentsOf: url)
 let json = try! JSONSerialization.jsonObject(with: data) as! [JSONObject]
 print(json)
 
+//Goal Tuple pattern - create a tuple pattern to make an array of tutorials.
 enum Day: Int {
     case monday, tuesday, wednesday, thursday, friday, saturday, sunday
 }
 
+//Model
 class Tutorial {
     
     //always a title
@@ -63,24 +68,51 @@ class Tutorial {
         self.day = day
     }
 }
+//Implement CustomStringConvertible so you can easily print tutorials:
+extension Tutorial: CustomStringConvertible {
+    var description: String {
+        var scheduled = ", not scheduled"
+        if let day = day {
+            scheduled = ", scheduled on \(day)"
+        }
+        return title + scheduled
+    }
+}
 
 var tutorials: [Tutorial] = []
 
-//convert the array of dictionaries/objs in JSON format into an array of Tutorial objs
+//Convert the array of dictionaries/objs in JSON format into an array of Tutorials objs
 //user maps to transform the array of ditionaries to an array of tutorials
 //how to do this with for
 for jsonObject in json {
-    var title = ""
-    var scheduleDay: Day? = nil
+    var currentTitle = ""
+    var currentDay: Day? = nil
     
     for (key,value) in jsonObject {
-        
+        //Switch will use tuple pattern matching
+        switch (key, value) {
+        // type-casting pattern
+        //validate if title is a string with -> is type-casting
+        case ("title", is  String):
+            //type-cast when valid
+            currentTitle = value as! String
+        //validate if day is a string with -> as type-casting
+        case ("day", let dayString as String):
+            //convert dayString into INT then into a Day(enum)
+            if let dayInt = Int(dayString), let day = Day(rawValue: dayInt - 1) {
+                currentDay = day
+            }
+        default:
+            break
+        }
     }
-    guard let title = jsonObject["title"] as? String else {
-        print("no title")
-        break
-    }
-    print(title)
-    tutorials.append(Tutorial(title: title, day: jsonObject["day"] as Day))
+//    guard let title = jsonObject["title"] as? String else {
+//        print("no title")
+//        break
+//    }
+    let currentTutorial = Tutorial(title: currentTitle, day: currentDay)
+    tutorials.append(currentTutorial)
 }
+
+print(tutorials)
 
