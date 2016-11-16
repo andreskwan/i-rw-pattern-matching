@@ -232,3 +232,12 @@ tutorials.sort{
 }
 print(tutorials)
 
+//Putting it all together
+for (index, tutorial) in tutorials.enumerated() {
+    guard let day = tutorial.day else {
+        print("\(index + 1). \"\(tutorial.title)\" Is not scheduled this week.")
+        continue
+    }
+    print("\(index + 1), \"\(tutorial.title)\" Is scheduled on \(day.name). It's the \(tutorial.order) tutorial of the week.")
+}
+
