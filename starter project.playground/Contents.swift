@@ -154,5 +154,21 @@ let sortedTutorials = tutorials.sorted { (tutorialA, tutorialB) -> Bool in
 }
 print(sortedTutorials)
 
-
+//Sorting with Optional Pattern Matching 
+tutorials.sort{
+    switch ($0.day, $1.day) {
+    //if not schedule, organize by alphabetical order
+    case (nil, nil):
+        return $0.title.compare($1.title, options: .caseInsensitive) == .orderedAscending
+    //sort Monday comes first than Tuesday
+    case (let firstDay?, let secondDay?):
+        return firstDay.rawValue < secondDay.rawValue
+    //nil will be at the begining
+    case (nil, let secondDay?):
+        return true
+    case (let firstDay?, nil):
+        return false
+    }
+}
+print(tutorials)
 
