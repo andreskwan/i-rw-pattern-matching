@@ -31,6 +31,8 @@
  Optional pattern
  Enumeration case pattern
  Expression pattern
+ Apple documentation for matching patterns
+ https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Patterns.html#//apple_ref/swift/grammar/tuple-pattern
  */
 
 import Foundation
@@ -106,13 +108,28 @@ for jsonObject in json {
             break
         }
     }
-//    guard let title = jsonObject["title"] as? String else {
-//        print("no title")
-//        break
-//    }
     let currentTutorial = Tutorial(title: currentTitle, day: currentDay)
     tutorials.append(currentTutorial)
 }
 
 print(tutorials)
+
+//Wildcard Pattern 
+//will be used to schedule the tutorials 
+//I need to unschedule first 
+tutorials.forEach{ (tutorial) in
+    tutorial.day = nil
+}
+tutorials.forEach{$0.day = nil}
+
+print(tutorials)
+
+//to schedule the tutorials 
+// 1 create an array of ordered valid days
+let days = (0...6).map { Day(rawValue: $0)! }
+print(days)
+// 2 take the array of days and sort it ramdomly
+// to understand SORTED method
+//https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html
+let randomDays = days.sorted { _ in random_uniform(value: 2) == 0 }
 
