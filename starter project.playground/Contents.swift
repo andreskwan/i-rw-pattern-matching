@@ -133,3 +133,26 @@ print(days)
 //https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html
 let randomDays = days.sorted { _ in random_uniform(value: 2) == 0 }
 
+print(randomDays)
+// 3 assign a day to each tutorial
+// there are more tutorials than available days so
+// there are going to be unschedule tutorials
+(0...6).forEach { tutorials[$0].day = randomDays[$0] }
+
+print(tutorials)
+print(tutorials.count)
+print(randomDays.count)
+
+//I need to organize the array by date
+// Sorting with Optional pattern
+// this is how I hangle the sorting of the array of tutorials
+let sortedTutorials = tutorials.sorted { (tutorialA, tutorialB) -> Bool in
+    guard let dayA = tutorialA.day, let dayB = tutorialB.day else {
+        return true
+    }
+    return dayA.rawValue < dayB.rawValue
+}
+print(sortedTutorials)
+
+
+
