@@ -13,3 +13,20 @@ enum CSSColor {
     case named(ColorName)
     case rgb(UInt8, UInt8, UInt8)
 }
+
+extension CSSColor: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .named(let colorName):
+            return colorName.rawValue
+        case .rgb(let red, let green, let blue):
+            return String(format: "#%02X%02X%02X", red, green, blue)
+        }
+    }
+}
+
+let fill = CSSColor.named(.fuchsia)
+let fillRGB = CSSColor.rgb(100, 100, 100)
+
+print(fillRGB)
+
