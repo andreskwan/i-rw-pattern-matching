@@ -2,10 +2,16 @@
  render a svg file*/
 import Foundation
 
-//CSS colors
-// Enum String as a RawRepresentable
-enum ColorName: String {
-    case black, silver, gray, white, maroon, red, purple, fuchsia, green, lime, olive, yellow, navy, blue, teal, aqua
+//Namespaces with Enum
+//Named types can act as a namespace to keep things organized and minimize complexity
+//ColorName is only ever used in the context of a CSSColor.
+//hide ColorName within a CSSColor model
+extension CSSColor {
+    //CSS colors
+    // Enum String as a RawRepresentable
+    enum ColorName: String {
+        case black, silver, gray, white, maroon, red, purple, fuchsia, green, lime, olive, yellow, navy, blue, teal, aqua
+    }
 }
 
 //Associated Values
@@ -42,4 +48,3 @@ extension CSSColor {
 let color3 = CSSColor(gray: 0xaa)
 print(color3)
 
-//Namespaces with Enum
