@@ -3,9 +3,9 @@
 import Foundation
 
 //Namespaces with Enum
-//Named types can act as a namespace to keep things organized and minimize complexity
-//ColorName is only ever used in the context of a CSSColor.
-//hide ColorName within a CSSColor model
+//Named types(Enum, Class, structs) can act as a namespace to keep things organized and minimize complexity
+//ColorName(Enum) is only ever used in the context of a CSSColor.
+//hide ColorName(Enum) within a CSSColor(Enum) model
 extension CSSColor {
     //CSS colors
     // Enum String as a RawRepresentable
@@ -48,3 +48,16 @@ extension CSSColor {
 let color3 = CSSColor(gray: 0xaa)
 print(color3)
 
+//Enums can be set up as pure namespaces that users can’t accidentally instantiate.
+//Since the Math enum contains no cases, and it’s illegal to add new cases in an extension,
+// it can never be instantiated.
+// never be able to accidentally misuse Math as a variable or parameter.
+// By declaring phi as a static constant, you don’t need to instantiate one.
+enum Math {
+    static let phi = 1.6180339887498948482 // golden mean
+}
+
+Math.phi
+
+
+// Structs
