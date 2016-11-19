@@ -2,8 +2,10 @@
  render a svg file*/
 import Foundation
 
-//Namespaces with Enum
-//Named types can act as a namespace to keep things organized and minimize complexity
+//Enum - Namespaces/Scope
+//- A namespace in Swift is a named region of a program
+//Named types(Classes, Enums, Structs)
+//- can act as a namespace to keep things organized and minimize complexity
 //ColorName is only ever used in the context of a CSSColor.
 //hide ColorName within a CSSColor model
 extension CSSColor {
@@ -14,14 +16,20 @@ extension CSSColor {
     }
 }
 
-//Associated Values
+//Enum - Associated Values
 enum CSSColor {
     case named(ColorName)
     case rgb(UInt8, UInt8, UInt8)
 }
 
-//Protocols and Methods with an Enum
+//Enum - Namespaces in action
+//- A namespace in Swift is a named region of a program
+//As such they provide virtual grouping within our code where things outside of the namespace cannot access things inside of the namespace without first mentioning the namespaces itself.
+CSSColor.ColorName.black
+
+//Enum - Protocols
 extension CSSColor: CustomStringConvertible {
+//Protocol implementation
 //You’re required to implement a getter for a description string property.
     var description: String {
         switch self {
@@ -37,8 +45,8 @@ let fillRGB = CSSColor.rgb(100, 100, 100)
 
 print(fillRGB)
 
-//Initializers with an Enum
-//make a custom initializer for grayscale values.
+//Enum - Custom initializer 
+//for grayscale values.
 extension CSSColor {
     init(gray: UInt8) {
         self = .rgb(gray, gray, gray)
