@@ -174,22 +174,6 @@ struct SVGDocument {
     }
 }
 
-//Drawing the SVG
-var document = SVGDocument()
-
-let rectangle = Rectangle()
-document.append(rectangle)
-
-let circle = Circle()
-document.append(circle)
-
-let htmlString = document.htmlString
-print(htmlString)
-
-let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
-view.loadHTMLString(htmlString, baseURL: nil)
-PlaygroundPage.current.liveView = view
-
 ///////////////////////////////////////////////////////
 //Classes
 ///////////////////////////////////////////////////////
@@ -197,7 +181,7 @@ PlaygroundPage.current.liveView = view
 //- base classes
 //- derived classes
 
-//Classes - computed properties
+//Structs/Classes - computed properties
 //implementing a computed property based on the radius
 extension Circle {
     var diameter: Double {
@@ -217,11 +201,34 @@ extension Circle {
     var perimeter: Double {
         return 2 * radius * Double.pi
     }
+    
+    //Struct - Mutation
+    //is ok if this function wants to mutate the struct.
+    //change stored properties on the struct
+    mutating func shift(x: Double, y: Double) {
+        center.x += x
+        center.y += y
+    }
 }
 
-let circleWithDiameter = Circle()
-print("circle diameter: \(circleWithDiameter.diameter)")
-print("circle area: \(circleWithDiameter.area)")
-print("circle perimeter: \(circleWithDiameter.perimeter)")
 
+let circle = Circle()
+print("circle diameter: \(circle.diameter)")
+print("circle area: \(circle.area)")
+print("circle perimeter: \(circle.perimeter)")
 
+///////////////////////////////////////////////////////
+//Drawing the SVG
+///////////////////////////////////////////////////////
+var document = SVGDocument()
+
+let rectangle = Rectangle()
+document.append(rectangle)
+document.append(circle)
+
+let htmlString = document.htmlString
+print(htmlString)
+
+let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+view.loadHTMLString(htmlString, baseURL: nil)
+PlaygroundPage.current.liveView = view
