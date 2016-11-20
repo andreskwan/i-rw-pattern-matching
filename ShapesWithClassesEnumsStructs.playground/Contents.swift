@@ -88,6 +88,7 @@ protocol Drawable {
 protocol DrawingContext {
     //Knows how to draw pure geometric types(graphycal primitives)
     func draw(circle: Circle)
+    func draw(rectangle: Rectangle)
 }
 
 //Struc - Adopting a Protocol - implementation
@@ -101,7 +102,21 @@ struct Circle : Drawable {
     
     // Implementing the Drawable protocol.
     func draw(with context: DrawingContext) {
+        //defer the draw work to the DrawingContext
         context.draw(circle: self)
+    }
+}
+
+struct Rectangle : Drawable {
+    var strokeWidth = 5
+    var strokeColor = CSSColor.named(.teal)
+    var fillColor = CSSColor.named(.aqua)
+    var origin = (x: 110.0, y: 10.0)
+    var size = (width: 100.0, height: 130.0)
+    
+    func draw(with context: DrawingContext) {
+        //defer the draw work to the DrawingContext
+        context.draw(rectangle: self)
     }
 }
 
