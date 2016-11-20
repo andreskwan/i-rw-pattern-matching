@@ -66,14 +66,13 @@ let color3 = CSSColor(gray: 0xaa)
 print(color3)
 
 ///////////////////////////////////////////////////////
-//Structs
+//Structs - Protocol Oriented Programming - Composition DP
 ///////////////////////////////////////////////////////
 // Is about creating new extensible(customizable) models
 
 //when creating a new model, first design the interface using a protocol
 
 //Goal - allow users to create their own custom shpes within the SVG
-
 
 //Protocol - I want my shapes to be drawable
 protocol Drawable {
@@ -190,3 +189,29 @@ print(htmlString)
 let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
 view.loadHTMLString(htmlString, baseURL: nil)
 PlaygroundPage.current.liveView = view
+
+///////////////////////////////////////////////////////
+//Classes
+///////////////////////////////////////////////////////
+//let me define 
+//- base classes
+//- derived classes
+
+//Classes - computed properties
+//implementing a computed property based on the radius
+extension Circle {
+    var diameter: Double {
+        get {
+            return radius * 2
+        }
+        set {
+            radius = newValue / 2
+        }
+    }
+}
+
+let circleWithDiameter = Circle()
+print(circleWithDiameter.diameter)
+
+
+
