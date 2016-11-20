@@ -226,7 +226,7 @@ extension Rectangle {
     }
 }
 
-//Protocols - formalizing closed shape relted methods into a protocol
+//Protocols - formalizing closed shape related methods into a protocol
 protocol ClosedShape {
     var area: Double { get }
     var perimeter: Double { get }
@@ -241,13 +241,20 @@ print("circle diameter: \(circle.diameter)")
 print("circle area: \(circle.area)")
 print("circle perimeter: \(circle.perimeter)")
 
+let rectangle = Rectangle()
+
+//Function - Protocol - func adopting ClosedShape protocol
+func totalPerimeter(shapes: [ClosedShape]) -> Double {
+    //it uses reduce to calculate the sum of perimeters.
+    return shapes.reduce(0) { $0 + $1.perimeter }
+}
+totalPerimeter(shapes: [circle, rectangle])
 
 ///////////////////////////////////////////////////////
 //Drawing the SVG
 ///////////////////////////////////////////////////////
 var document = SVGDocument()
 
-let rectangle = Rectangle()
 document.append(rectangle)
 document.append(circle)
 
