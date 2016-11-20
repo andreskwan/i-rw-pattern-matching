@@ -211,11 +211,36 @@ extension Circle {
     }
 }
 
+//Classes/Structs - Retroactive Modeling and Type Constraining
+//retroactive modeling. 
+//- It lets you extend behavior of a model type even if you don’t have the source code for it.
+
+//Goal - create a protocol for clased shapes
+
+extension Rectangle {
+    var area: Double {
+        return size.width * size.height
+    }
+    var perimeter: Double {
+        return 2 * (size.width + size.height)
+    }
+}
+
+//Protocols - formalizing closed shape relted methods into a protocol
+protocol ClosedShape {
+    var area: Double { get }
+    var perimeter: Double { get }
+}
+
+//C.S - Protocol - retroactively adopting the protocol
+extension Circle: ClosedShape {}
+extension Rectangle: ClosedShape {}
 
 let circle = Circle()
 print("circle diameter: \(circle.diameter)")
 print("circle area: \(circle.area)")
 print("circle perimeter: \(circle.perimeter)")
+
 
 ///////////////////////////////////////////////////////
 //Drawing the SVG
