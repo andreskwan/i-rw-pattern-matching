@@ -208,10 +208,20 @@ extension Circle {
             radius = newValue / 2
         }
     }
+    
+    // Example of getter-only computed properties
+    var area: Double {
+        return radius * radius * Double.pi
+    }
+    
+    var perimeter: Double {
+        return 2 * radius * Double.pi
+    }
 }
 
 let circleWithDiameter = Circle()
-print(circleWithDiameter.diameter)
-
+print("circle diameter: \(circleWithDiameter.diameter)")
+print("circle area: \(circleWithDiameter.area)")
+print("circle perimeter: \(circleWithDiameter.perimeter)")
 
 
