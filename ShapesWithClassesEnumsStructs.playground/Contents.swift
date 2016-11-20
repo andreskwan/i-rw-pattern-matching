@@ -155,3 +155,21 @@ final class SVGContext : DrawingContext {
     }
 }
 
+struct SVGDocument {
+    var drawables: [Drawable] = []
+    
+    //Getters - Computed property
+    //- Creates an SVGContext and returns the htmlString from the context.
+    var htmlString: String {
+        let context = SVGContext()
+        for drawable in drawables {
+            drawable.draw(with: context)
+        }
+        return context.htmlString
+    }
+    
+    mutating func append(_ drawable: Drawable) {
+        drawables.append(drawable)
+    }
+}
+
