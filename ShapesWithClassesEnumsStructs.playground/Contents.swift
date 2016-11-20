@@ -1,6 +1,15 @@
 /*Goal Create framework for SVG
  render a svg file*/
 import Foundation
+import WebKit
+import PlaygroundSupport
+
+///////////////////////////////////////////////////////
+//Enums
+///////////////////////////////////////////////////////
+//amazing for well known list of things that we want to represent 
+//no so good for things that could be extended or changed in time.
+//Why? Because new enum cases cannot be added later in an extension.
 
 //Enum - Namespaces/Scope
 //- A namespace in Swift is a named region of a program
@@ -55,4 +64,44 @@ extension CSSColor {
 
 let color3 = CSSColor(gray: 0xaa)
 print(color3)
+
+///////////////////////////////////////////////////////
+//Structs
+///////////////////////////////////////////////////////
+// Is about creating new extensible(customizable) models
+
+//when creating a new model, first design the interface using a protocol
+
+//Goal - allow users to create their own custom shpes within the SVG
+
+
+//Protocol - I want my shapes to be drawable
+protocol Drawable {
+    //defines what it means to be Drawable
+    //no drawing technology is specified 
+    //so I could implement it in terms of anything!
+    //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
+    func draw(with context: DrawingContext)
+}
+
+//Protocol - I need a context to draw my shapes
+protocol DrawingContext {
+    //Knows how to draw pure geometric types(graphycal primitives)
+    func draw(circle: Circle)
+}
+
+//Struc - Adopting a Protocol - implementation
+struct Circle : Drawable {
+    //Struct - to group together stored properties
+    var strokeWidth = 5
+    var strokeColor = CSSColor.named(.red)
+    var fillColor = CSSColor.named(.yellow)
+    var center = (x: 100.0, y: 150.0)
+    var radius = 60.0
+    
+    // Implementing the Drawable protocol.
+    func draw(with context: DrawingContext) {
+        context.draw(circle: self)
+    }
+}
 
