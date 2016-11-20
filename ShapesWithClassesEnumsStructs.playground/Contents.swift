@@ -97,7 +97,7 @@ struct Circle : Drawable {
     var strokeWidth = 5
     var strokeColor = CSSColor.named(.red)
     var fillColor = CSSColor.named(.yellow)
-    var center = (x: 100.0, y: 150.0)
+    var center = (x: 65.0, y: 65.0)
     var radius = 60.0
     
     // Implementing the Drawable protocol.
@@ -111,7 +111,7 @@ struct Rectangle : Drawable {
     var strokeWidth = 5
     var strokeColor = CSSColor.named(.teal)
     var fillColor = CSSColor.named(.aqua)
-    var origin = (x: 110.0, y: 10.0)
+    var origin = (x: 190.0, y: 10.0)
     var size = (width: 100.0, height: 130.0)
     
     func draw(with context: DrawingContext) {
@@ -162,6 +162,8 @@ struct SVGDocument {
     //- Creates an SVGContext and returns the htmlString from the context.
     var htmlString: String {
         let context = SVGContext()
+        context.width = 300
+        context.height = 300 
         for drawable in drawables {
             drawable.draw(with: context)
         }
@@ -173,3 +175,18 @@ struct SVGDocument {
     }
 }
 
+//Drawing the SVG
+var document = SVGDocument()
+
+let rectangle = Rectangle()
+document.append(rectangle)
+
+let circle = Circle()
+document.append(circle)
+
+let htmlString = document.htmlString
+print(htmlString)
+
+let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+view.loadHTMLString(htmlString, baseURL: nil)
+PlaygroundPage.current.liveView = view
