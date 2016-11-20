@@ -120,3 +120,38 @@ struct Rectangle : Drawable {
     }
 }
 
+//Class - Adopting the DrawingContext protocol
+final class SVGContext : DrawingContext {
+    
+    private var commands: [String] = []
+    
+    //Context size
+    var width = 250
+    var height = 250
+    
+    // 1 conform to the DrawingContext protocol
+    func draw(circle: Circle) {
+        commands.append("<circle cx='\(circle.center.x)' cy='\(circle.center.y)\' r='\(circle.radius)' stroke='\(circle.strokeColor)' fill='\(circle.fillColor)' stroke-width='\(circle.strokeWidth)'  />")
+    }
+    
+    // 2 conform to the DrawingContext protocol
+    func draw(rectangle: Rectangle) {
+        commands.append("<rect x='\(rectangle.origin.x)' y='\(rectangle.origin.y)' width='\(rectangle.size.width)' height='\(rectangle.size.height)' stroke='\(rectangle.strokeColor)' fill='\(rectangle.fillColor)' stroke-width='\(rectangle.strokeWidth)' />")
+    }
+    
+    //Getter
+    var svgString: String {
+        var output = "<svg width='\(width)' height='\(height)'>"
+        for command in commands {
+            output += command
+        }
+        output += "</svg>"
+        return output
+    }
+    
+    //Getter
+    var htmlString: String {
+        return "<!DOCTYPE html><html><body>" + svgString + "</body></html>"
+    }
+}
+
