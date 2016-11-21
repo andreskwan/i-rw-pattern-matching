@@ -214,6 +214,7 @@ struct Witch: Magical {
                 }
             }
         }
+        //no matter what always return a toad???!!!
         return Toad(name: "New Toad")  // This is an entirely new Toad.
     }
     
