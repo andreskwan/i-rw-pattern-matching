@@ -266,6 +266,7 @@ struct Witch: Magical {
 
 func handle(spellError error: ChangoSpellError) {
     let prefix = "\nSpell Failed.\n"
+    //pattern matching - to handle errors
     switch error {
     case .hatMissingOrNotMagical:
         print("\(prefix) Did you forget your hat, or does it need its batteries charged?")
@@ -289,6 +290,7 @@ func exampleOne() {
     let witchOne = Witch(name: "Sabrina", familiar: salem)
     do {
         // 3
+        //try - use it to clearly indicate which line or section of code may throw errors
         try witchOne.turnFamiliarIntoToad()
     }
         // 4
