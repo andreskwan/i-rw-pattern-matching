@@ -72,11 +72,12 @@ extension Spell {
     //Failable Initializer replacing the factory method
     //this initializer is optional
     init?(words: String) {
-        if let incantation = MagicWords(rawValue: words) {
-            self.magicWords = incantation
-        } else {
+        //guard -  failure case is more evident
+        guard let incantation = MagicWords(rawValue: words) else {
             return nil
         }
+        //golden path is the path of execution, not in an else clause
+        self.magicWords = incantation
     }
 }
 
