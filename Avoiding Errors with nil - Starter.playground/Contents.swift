@@ -304,3 +304,29 @@ func exampleOne() {
 }
 
 exampleOne()
+
+func exampleTwo() {
+    print("") // Add an empty line in the debug area
+    
+    let toad = Toad(name: "Mr. Toad")
+    toad.speak()
+    
+    let hat = Hat()
+    let witchTwo = Witch(name: "Elphaba", familiar: toad, hat: hat)
+    
+    print("") // Add an empty line in the debug area
+    
+    let newToad = try? witchTwo.turnFamiliarIntoToad()
+    if newToad != nil { // Same logic as: if let _ = newToad
+        print("Successfully changed familiar into toad.")
+    }
+    else {
+        print("Spell failed.")
+    }
+}
+
+exampleTwo()
+
+////////////////////////////////////////////////////////////////////////
+//Handling Errors
+////////////////////////////////////////////////////////////////////////
