@@ -50,27 +50,15 @@ enum MagicWords: String {
 //Struct - model spell 
 //- Why not a protocol for spells?
 struct Spell {
-  var magicWords: MagicWords = .abracadbra
-}
-
-extension Spell {
-    //Enum - why not use the Enum as parameter to avoid errors?
-    //Factory Method
-    //- this is an initializer
-    //- tries to create an spell using a String that represents a MagicWord
-  static func create(withMagicWords words: String) -> Spell? {
-    //Optional binding
-    if let incantation = MagicWords(rawValue: words) {
-      var spell = Spell()
-      spell.magicWords = incantation
-      return spell
-    }
-    else {
-      return nil
-    }
-  }
+    
+    var magicWords: MagicWords = .abracadbra
+    
+    ////////////////////////////////////////////////////////////////////////
+    //    Overloading Failable initializers
+    ////////////////////////////////////////////////////////////////////////
     //Failable Initializer replacing the factory method
     //this initializer is optional
+    // If words are considered magical, we can create a spell
     init?(words: String) {
         //guard -  failure case is more evident
         guard let incantation = MagicWords(rawValue: words) else {
@@ -78,6 +66,29 @@ extension Spell {
         }
         //golden path is the path of execution, not in an else clause
         self.magicWords = incantation
+    }
+    
+    init?(magicWords: MagicWords) {
+        self.magicWords = magicWords
+    }
+}
+extension Spell {
+    //Enum - why not use the Enum as parameter to avoid errors?
+    //Factory Method
+    //- this is an initializer
+    //- tries to create an spell using a String that represents a MagicWord
+    static func create(withMagicWords words: String) -> Spell? {
+        //Optional binding
+        if let incantation = MagicWords(rawValue: words) {
+        // this makes this Factory method obsolete 
+        //  because the Spell() with Failable initializers will handle the creation of the object
+          var spell = Spell()
+          spell.magicWords = incantation
+          return spell
+        }
+        else {
+          return nil
+        }
     }
 }
 
@@ -88,6 +99,8 @@ let third = Spell(words: "abracadabra")
 let fourth = Spell(words: "ascendio")
 let fifth = Spell()
 print(fifth)
+
+
 
 
     
