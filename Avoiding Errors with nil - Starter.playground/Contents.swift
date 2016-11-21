@@ -264,6 +264,9 @@ struct Witch: Magical {
     }
 }
 
+////////////////////////////////////////////////////////////////////////
+//Handling Errors
+////////////////////////////////////////////////////////////////////////
 func handle(spellError error: ChangoSpellError) {
     let prefix = "\nSpell Failed.\n"
     //pattern matching - to handle errors
@@ -328,5 +331,26 @@ func exampleTwo() {
 exampleTwo()
 
 ////////////////////////////////////////////////////////////////////////
-//Handling Errors
+//Error propagation - defer
 ////////////////////////////////////////////////////////////////////////
+
+extension Witch {
+    func speak() {
+        defer {
+            print("*1 - cackles*")
+        }
+        defer {
+            print("*2 - screeches*")
+        }
+        print("Hello my pretties.")
+    }
+}
+
+func exampleThree() {
+    print("") // Add an empty line in the debug area
+    
+    let witchThree = Witch(name: "Hermione", familiar: nil, hat: nil)
+    witchThree.speak()
+}
+
+exampleThree()
