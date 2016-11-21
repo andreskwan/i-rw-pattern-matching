@@ -263,3 +263,26 @@ struct Witch: Magical {
         return change.count > 0
     }
 }
+
+func exampleOne() {
+    print("") // Add an empty line in the debug area
+    
+    // 1
+    let salem = Cat(name: "Salem Saberhagen")
+    salem.speak()
+    
+    // 2
+    let witchOne = Witch(name: "Sabrina", familiar: salem)
+    do {
+        // 3
+        try witchOne.turnFamiliarIntoToad()
+    }
+        // 4
+    catch let error as ChangoSpellError {
+        handle(spellError: error)
+    }
+        // 5
+    catch {
+        print("Something went wrong, are you feeling OK?")
+    }
+}
