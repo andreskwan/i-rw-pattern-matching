@@ -199,21 +199,39 @@ struct Witch: Magical {
     }
     
     func turnFamiliarIntoToad() -> Toad {
-        if let hat = hat {
-            if hat.isMagical { // When have you ever seen a Witch perform a spell without her magical hat on ? :]
-                if let familiar = familiar {   // Check if witch has a familiar
-                    if let toad = familiar as? Toad {  // If familiar is already a toad, no magic required
-                        return toad
-                    } else {
-                        if hasSpell(ofType: .prestoChango) {
-                            if let name = familiar.name {
-                                return Toad(name: name)
-                            }
-                        }
-                    }
-                }
+        //here I can validate if the wich has a hat and if it is magic
+        guard let hat = hat else {
+            //if not hat, then no magic!
+            //what should I return here?
+            return 
+        }
+        
+        //what to do here?
+        //do I need this guard? 
+        //it makes the failure case evident
+        guard hat.isMagical else {
+            //what should I return here?
+        }
+//        if hat.isMagical { // When have you ever seen a Witch perform a spell without her magical hat on ? :]
+        // Check if witch has a familiar
+        guard let familiar = familiar else {
+            //no familiar yet
+            //nothing to be turn into a toad
+            //what should I return here?
+            return
+        }
+        // If familiar is already a toad, no magic required
+        guard let _ = familiar as? Toad else {
+            //familiar is a
+            return toad
+        }
+        
+        if hasSpell(ofType: .prestoChango) {
+            if let name = familiar.name {
+                return Toad(name: name)
             }
         }
+//        }
         //no matter what always return a toad???!!!
         return Toad(name: "New Toad")  // This is an entirely new Toad.
     }
