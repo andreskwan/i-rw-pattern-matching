@@ -174,7 +174,20 @@ protocol Magical: Avatar {
     var name: String? { get set }
     var spells: [Spell] { get set }
     
-    func turnFamiliarIntoToad() -> Toad
+    func turnFamiliarIntoToad() throws -> Toad
+}
+
+//do-catch in action 
+//create the custom errors to throw 
+//Enum will hold the error states
+//Enum - confroms the Error protocol
+//spellFailed case (associative value)- specify a custom reason for the spell failure
+enum ChangoSpellError: Error {
+    case hatMissingOrNotMagical
+    case noFamiliar
+    case familiarAlreadyAToad
+    case spellFailed(reason: String)
+    case spellNotKnownToWitch
 }
 
 struct Witch: Magical {
@@ -198,7 +211,7 @@ struct Witch: Magical {
         self.hat = hat
     }
     
-    func turnFamiliarIntoToad() -> Toad {
+    func turnFamiliarIntoToad() throws -> Toad {
         //here I can validate if the wich has a hat and if it is magic
         guard let hat = hat else {
             //if not hat, then no magic!
