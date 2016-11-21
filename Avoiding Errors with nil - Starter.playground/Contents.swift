@@ -230,21 +230,30 @@ struct Witch: Magical {
             throw ChangoSpellError.noFamiliar
         }
         
-        // If familiar is already a toad, no magic required. but it does have a cost to use a spell, that is why should throw this kind of error
-        //IS 
+        // Check if familiar is already a toad - if so, why are you casting the spell?
+        //If familiar is already a toad, no magic required.
+        //- but it does have a cost to use a spell,
+        //that is why should throw this kind of error
+        
+        //IS - checking type
         //- for type comparison
         //- to conformance ot the protocol
         if familiar is Toad {
             throw ChangoSpellError.familiarAlreadyAToad
         }
         
-        if hasSpell(ofType: .prestoChango) {
-            if let name = familiar.name {
-                return Toad(name: name)
-            }
+        // Check if casted spell is known/valid for the witch
+        guard hasSpell(ofType: .prestoChango) else {
+            throw ChangoSpellError.spellNotKnownToWitch
         }
-        //no matter what always return a toad???!!!
-        return Toad(name: "New Toad")  // This is an entirely new Toad.
+        
+        // Check if the familiar has a name
+        guard let name = familiar.name else {
+            let reason = "familiar doesn't have a name."
+            throw ChangoSpellError.spellFailed(reason: reason)
+        }
+        
+        return Toad(name: name)
     }
     
     func hasSpell(ofType type: MagicWords) -> Bool { // Check if witch currently has an appropriate spell in their spellbook
