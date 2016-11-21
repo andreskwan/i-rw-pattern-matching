@@ -65,15 +65,15 @@ struct Spell {
 // Familiars
 
 protocol Familiar: Avatar {
-  var noise: String { get }
-  var name: String? { get set }
-  init(name: String?)
+    var noise: String { get }
+    var name: String? { get set }
+    init(name: String?)
 }
 
 extension Familiar {
-  func speak() {
-    print(avatar, "* \(noise)s *", separator: " ", terminator: "")
-  }
+    func speak() {
+        print(avatar, "* \(noise)s *", separator: " ", terminator: "")
+    }
 }
 
 

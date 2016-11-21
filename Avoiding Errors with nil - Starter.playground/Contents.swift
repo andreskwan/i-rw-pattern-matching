@@ -98,8 +98,129 @@ let first = Spell(magicWords: MagicWords(rawValue: "abracadabra")!)
 let third = Spell(words: "abracadabra")
 let fourth = Spell(words: "ascendio")
 
+// ----------------------------------------------------------------------------
+// Example Two - Avoiding Errors with Custom Handling - Pyramids of Doom
+// ----------------------------------------------------------------------------
+
+// Familiars
+
+protocol Familiar: Avatar {
+    var noise: String { get }
+    var name: String? { get set }
+    init(name: String?)
+}
+
+extension Familiar {
+    func speak() {
+        print(avatar, "* \(noise)s *", separator: " ", terminator: "")
+    }
+}
 
 
-
-
+struct Cat: Familiar {
+    var name: String?
+    var noise  = "purr"
+    var avatar = "🐱"
     
+    init(name: String?) {
+        self.name = name
+    }
+}
+
+struct Bat: Familiar {
+    var name: String?
+    var noise = "screech"
+    var avatar = "[bat]" // Sadly there is no bat avatar
+    
+    init(name: String?) {
+        self.name = name
+    }
+    
+    func speak() {
+        print(avatar, "* \(noise)es *", separator: " ", terminator: "")
+    }
+}
+
+struct Toad: Familiar {
+    init(name: String?) {
+        self.name = name
+    }
+    
+    var name: String?
+    var noise  = "croak"
+    var avatar = "🐸"
+}
+
+// Magical Things
+
+struct Hat {
+    enum HatSize {
+        case small
+        case medium
+        case large
+    }
+    
+    enum HatColor {
+        case black
+    }
+    
+    var color: HatColor = .black
+    var size: HatSize = .medium
+    var isMagical = true
+}
+
+
+protocol Magical: Avatar {
+    var name: String? { get set }
+    var spells: [Spell] { get set }
+    
+    func turnFamiliarIntoToad() -> Toad
+}
+
+struct Witch: Magical {
+    var avatar = "👩🏻"
+    var name: String?
+    var familiar: Familiar?
+    var spells: [Spell] = []
+    var hat: Hat?
+    
+    init(name: String?, familiar: Familiar?) {
+        self.name = name
+        self.familiar = familiar
+        
+        if let s = Spell(magicWords: .prestoChango) {
+            self.spells = [s]
+        }
+    }
+    
+    init(name: String?, familiar: Familiar?, hat: Hat?) {
+        self.init(name: name, familiar: familiar)
+        self.hat = hat
+    }
+    
+    func turnFamiliarIntoToad() -> Toad {
+        if let hat = hat {
+            if hat.isMagical { // When have you ever seen a Witch perform a spell without her magical hat on ? :]
+                if let familiar = familiar {   // Check if witch has a familiar
+                    if let toad = familiar as? Toad {  // If familiar is already a toad, no magic required
+                        return toad
+                    } else {
+                        if hasSpell(ofType: .prestoChango) {
+                            if let name = familiar.name {
+                                return Toad(name: name)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Toad(name: "New Toad")  // This is an entirely new Toad.
+    }
+    
+    func hasSpell(ofType type: MagicWords) -> Bool { // Check if witch currently has an appropriate spell in their spellbook
+        let change = spells.flatMap { spell in
+            spell.magicWords == type
+        }
+        return change.count > 0
+    }
+}
