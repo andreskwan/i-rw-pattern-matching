@@ -33,7 +33,6 @@ protocol Avatar {
   var avatar: String { get }
 }
 
-
 // ----------------------------------------------------------------------------
 // Example One - Avoiding Swift errors using nil (failable initializers)
 // ----------------------------------------------------------------------------
@@ -77,28 +76,28 @@ extension Spell {
     //Factory Method
     //- this is an initializer
     //- tries to create an spell using a String that represents a MagicWord
-    static func create(withMagicWords words: String) -> Spell? {
-        //Optional binding
-        if let incantation = MagicWords(rawValue: words) {
-        // this makes this Factory method obsolete 
-        //  because the Spell() with Failable initializers will handle the creation of the object
-          var spell = Spell()
-          spell.magicWords = incantation
-          return spell
-        }
-        else {
-          return nil
-        }
-    }
+    //    static func create(withMagicWords words: String) -> Spell? {
+    //        //Optional binding
+    //        if let incantation = MagicWords(rawValue: words) {
+    //        // this makes this Factory method obsolete 
+    //        //  because the Spell() with Failable initializers will handle the creation of the object
+    //          var spell = Spell()
+    //          spell.magicWords = incantation
+    //          return spell
+    //        }
+    //        else {
+    //          return nil
+    //        }
+    //    }
 }
 
-let first = Spell.create(withMagicWords: "abracadabra")
-let second = Spell.create(withMagicWords: "ascendio")
+let first = Spell(magicWords: MagicWords(rawValue: "abracadabra")!)
+//failing if not a valid raw value
+//let second = Spell(magicWords: MagicWords(rawValue: "ascendio")!)
 
 let third = Spell(words: "abracadabra")
 let fourth = Spell(words: "ascendio")
-let fifth = Spell()
-print(fifth)
+
 
 
 
