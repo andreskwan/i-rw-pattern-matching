@@ -212,31 +212,30 @@ struct Witch: Magical {
     }
     
     func turnFamiliarIntoToad() throws -> Toad {
+        // When have you ever seen a Witch perform a spell without her magical hat on?
         //here I can validate if the wich has a hat and if it is magic
-        guard let hat = hat else {
+        guard let hat = hat, hat.isMagical else {
             //if not hat, then no magic!
             //what should I return here?
-            return 
+            //return
+            throw ChangoSpellError.hatMissingOrNotMagical
         }
         
-        //what to do here?
-        //do I need this guard? 
-        //it makes the failure case evident
-        guard hat.isMagical else {
-            //what should I return here?
-        }
-//        if hat.isMagical { // When have you ever seen a Witch perform a spell without her magical hat on ? :]
         // Check if witch has a familiar
         guard let familiar = familiar else {
             //no familiar yet
             //nothing to be turn into a toad
             //what should I return here?
-            return
+            //return
+            throw ChangoSpellError.noFamiliar
         }
-        // If familiar is already a toad, no magic required
-        guard let _ = familiar as? Toad else {
-            //familiar is a
-            return toad
+        
+        // If familiar is already a toad, no magic required. but it does have a cost to use a spell, that is why should throw this kind of error
+        //IS 
+        //- for type comparison
+        //- to conformance ot the protocol
+        if familiar is Toad {
+            throw ChangoSpellError.familiarAlreadyAToad
         }
         
         if hasSpell(ofType: .prestoChango) {
@@ -244,7 +243,6 @@ struct Witch: Magical {
                 return Toad(name: name)
             }
         }
-//        }
         //no matter what always return a toad???!!!
         return Toad(name: "New Toad")  // This is an entirely new Toad.
     }
