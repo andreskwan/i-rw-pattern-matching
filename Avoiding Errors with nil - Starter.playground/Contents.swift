@@ -70,6 +70,7 @@ extension Spell {
     }
   }
     //Failable Initializer replacing the factory method
+    //this initializer is optional
     init?(words: String) {
         if let incantation = MagicWords(rawValue: words) {
             self.magicWords = incantation
@@ -84,4 +85,8 @@ let second = Spell.create(withMagicWords: "ascendio")
 
 let third = Spell(words: "abracadabra")
 let fourth = Spell(words: "ascendio")
+let fifth = Spell()
+print(fifth)
+
+
     
