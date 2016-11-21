@@ -55,8 +55,11 @@ struct Spell {
 
 extension Spell {
     //Enum - why not use the Enum as parameter to avoid errors?
-    //Failable Initializer
+    //Factory Method
+    //- this is an initializer
+    //- tries to create an spell using a String that represents a MagicWord
   static func create(withMagicWords words: String) -> Spell? {
+    //Optional binding
     if let incantation = MagicWords(rawValue: words) {
       var spell = Spell()
       spell.magicWords = incantation
@@ -66,6 +69,7 @@ extension Spell {
       return nil
     }
   }
+    
 }
 
 let first = Spell.create(withMagicWords: "abracadabra")
