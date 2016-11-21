@@ -264,6 +264,20 @@ struct Witch: Magical {
     }
 }
 
+func handle(spellError error: ChangoSpellError) {
+    let prefix = "\nSpell Failed.\n"
+    switch error {
+    case .hatMissingOrNotMagical:
+        print("\(prefix) Did you forget your hat, or does it need its batteries charged?")
+        
+    case .familiarAlreadyAToad:
+        print("\(prefix) Why are you trying to change a Toad into a Toad?")
+        
+    default:
+        print(prefix)
+    }
+}
+
 func exampleOne() {
     print("") // Add an empty line in the debug area
     
@@ -286,3 +300,5 @@ func exampleOne() {
         print("Something went wrong, are you feeling OK?")
     }
 }
+
+exampleOne()
