@@ -27,6 +27,8 @@
 // & their familiars (i.e. cats, bats, toads).
 // ----------------------------------------------------------------------------
 
+//Protocol - Provide a visual representation
+//of each object that can be printed to the console.
 protocol Avatar {
   var avatar: String { get }
 }
@@ -35,7 +37,9 @@ protocol Avatar {
 // ----------------------------------------------------------------------------
 // Example One - Avoiding Swift errors using nil (failable initializers)
 // ----------------------------------------------------------------------------
-
+//Enum - magic words that represent a spell
+//- String is the (custom type)/(backing store)
+//- list of known things
 enum MagicWords: String {
   case abracadbra = "abracadabra"
   case alakazam = "alakazam"
@@ -43,11 +47,15 @@ enum MagicWords: String {
   case prestoChango = "presto chango"
 }
 
+//Struct - model spell 
+//- Why not a protocol for spells?
 struct Spell {
   var magicWords: MagicWords = .abracadbra
 }
 
 extension Spell {
+    //Enum - why not use the Enum as parameter to avoid errors?
+    //Failable Initializer
   static func create(withMagicWords words: String) -> Spell? {
     if let incantation = MagicWords(rawValue: words) {
       var spell = Spell()
