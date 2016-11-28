@@ -27,15 +27,18 @@
 // & their familiars (i.e. cats, bats, toads).
 // ----------------------------------------------------------------------------
 
+//Protocol - Provide a visual representation
+//of each object that can be printed to the console.
 protocol Avatar {
   var avatar: String { get }
 }
 
-
 // ----------------------------------------------------------------------------
 // Example One - Avoiding Swift errors using nil (failable initializers)
 // ----------------------------------------------------------------------------
-
+//Enum - magic words that represent a spell
+//- String is the (custom type)/(backing store)
+//- list of known things
 enum MagicWords: String {
   case abracadbra = "abracadabra"
   case alakazam = "alakazam"
@@ -43,23 +46,311 @@ enum MagicWords: String {
   case prestoChango = "presto chango"
 }
 
+//Struct - model spell 
+//- Why not a protocol for spells?
 struct Spell {
-  var magicWords: MagicWords = .abracadbra
+    
+    var magicWords: MagicWords = .abracadbra
+    
+    ////////////////////////////////////////////////////////////////////////
+    //    Overloading Failable initializers
+    ////////////////////////////////////////////////////////////////////////
+    //Failable Initializer replacing the factory method
+    //this initializer is optional
+    // If words are considered magical, we can create a spell
+    init?(words: String) {
+        //guard -  failure case is more evident
+        guard let incantation = MagicWords(rawValue: words) else {
+            return nil
+        }
+        //golden path is the path of execution, not in an else clause
+        self.magicWords = incantation
+    }
+    
+    init?(magicWords: MagicWords) {
+        self.magicWords = magicWords
+    }
+}
+extension Spell {
+    //Enum - why not use the Enum as parameter to avoid errors?
+    //Factory Method
+    //- this is an initializer
+    //- tries to create an spell using a String that represents a MagicWord
+    //    static func create(withMagicWords words: String) -> Spell? {
+    //        //Optional binding
+    //        if let incantation = MagicWords(rawValue: words) {
+    //        // this makes this Factory method obsolete 
+    //        //  because the Spell() with Failable initializers will handle the creation of the object
+    //          var spell = Spell()
+    //          spell.magicWords = incantation
+    //          return spell
+    //        }
+    //        else {
+    //          return nil
+    //        }
+    //    }
 }
 
-extension Spell {
-  static func create(withMagicWords words: String) -> Spell? {
-    if let incantation = MagicWords(rawValue: words) {
-      var spell = Spell()
-      spell.magicWords = incantation
-      return spell
+let first = Spell(magicWords: MagicWords(rawValue: "abracadabra")!)
+//failing if not a valid raw value
+//let second = Spell(magicWords: MagicWords(rawValue: "ascendio")!)
+
+let third = Spell(words: "abracadabra")
+let fourth = Spell(words: "ascendio")
+
+// ----------------------------------------------------------------------------
+// Example Two - Avoiding Errors with Custom Handling - Pyramids of Doom
+// ----------------------------------------------------------------------------
+
+// Familiars
+
+protocol Familiar: Avatar {
+    var noise: String { get }
+    var name: String? { get set }
+    init(name: String?)
+}
+
+extension Familiar {
+    func speak() {
+        print(avatar, "* \(noise)s *", separator: " ", terminator: "")
+    }
+}
+
+
+struct Cat: Familiar {
+    var name: String?
+    var noise  = "purr"
+    var avatar = "🐱"
+    
+    init(name: String?) {
+        self.name = name
+    }
+}
+
+struct Bat: Familiar {
+    var name: String?
+    var noise = "screech"
+    var avatar = "[bat]" // Sadly there is no bat avatar
+    
+    init(name: String?) {
+        self.name = name
+    }
+    
+    func speak() {
+        print(avatar, "* \(noise)es *", separator: " ", terminator: "")
+    }
+}
+
+struct Toad: Familiar {
+    init(name: String?) {
+        self.name = name
+    }
+    
+    var name: String?
+    var noise  = "croak"
+    var avatar = "🐸"
+}
+
+// Magical Things
+
+struct Hat {
+    enum HatSize {
+        case small
+        case medium
+        case large
+    }
+    
+    enum HatColor {
+        case black
+    }
+    
+    var color: HatColor = .black
+    var size: HatSize = .medium
+    var isMagical = true
+}
+
+
+protocol Magical: Avatar {
+    var name: String? { get set }
+    var spells: [Spell] { get set }
+    
+    func turnFamiliarIntoToad() throws -> Toad
+}
+
+//do-catch in action 
+//create the custom errors to throw 
+//Enum will hold the error states
+//Enum - confroms the Error protocol
+//spellFailed case (associative value)- specify a custom reason for the spell failure
+enum ChangoSpellError: Error {
+    case hatMissingOrNotMagical
+    case noFamiliar
+    case familiarAlreadyAToad
+    case spellFailed(reason: String)
+    case spellNotKnownToWitch
+}
+
+struct Witch: Magical {
+    var avatar = "👩🏻"
+    var name: String?
+    var familiar: Familiar?
+    var spells: [Spell] = []
+    var hat: Hat?
+    
+    init(name: String?, familiar: Familiar?) {
+        self.name = name
+        self.familiar = familiar
+        
+        if let s = Spell(magicWords: .prestoChango) {
+            self.spells = [s]
+        }
+    }
+    
+    init(name: String?, familiar: Familiar?, hat: Hat?) {
+        self.init(name: name, familiar: familiar)
+        self.hat = hat
+    }
+    
+    func turnFamiliarIntoToad() throws -> Toad {
+        // When have you ever seen a Witch perform a spell without her magical hat on?
+        //here I can validate if the wich has a hat and if it is magic
+        guard let hat = hat, hat.isMagical else {
+            //if not hat, then no magic!
+            //what should I return here?
+            //return
+            throw ChangoSpellError.hatMissingOrNotMagical
+        }
+        
+        // Check if witch has a familiar
+        guard let familiar = familiar else {
+            //no familiar yet
+            //nothing to be turn into a toad
+            //what should I return here?
+            //return
+            throw ChangoSpellError.noFamiliar
+        }
+        
+        // Check if familiar is already a toad - if so, why are you casting the spell?
+        //If familiar is already a toad, no magic required.
+        //- but it does have a cost to use a spell,
+        //that is why should throw this kind of error
+        
+        //IS - checking type
+        //- for type comparison
+        //- to conformance ot the protocol
+        if familiar is Toad {
+            throw ChangoSpellError.familiarAlreadyAToad
+        }
+        
+        // Check if casted spell is known/valid for the witch
+        guard hasSpell(ofType: .prestoChango) else {
+            throw ChangoSpellError.spellNotKnownToWitch
+        }
+        
+        // Check if the familiar has a name
+        guard let name = familiar.name else {
+            let reason = "familiar doesn't have a name."
+            throw ChangoSpellError.spellFailed(reason: reason)
+        }
+        
+        return Toad(name: name)
+    }
+    
+    func hasSpell(ofType type: MagicWords) -> Bool { // Check if witch currently has an appropriate spell in their spellbook
+        let change = spells.flatMap { spell in
+            spell.magicWords == type
+        }
+        return change.count > 0
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+//Handling Errors
+////////////////////////////////////////////////////////////////////////
+func handle(spellError error: ChangoSpellError) {
+    let prefix = "\nSpell Failed.\n"
+    //pattern matching - to handle errors
+    switch error {
+    case .hatMissingOrNotMagical:
+        print("\(prefix) Did you forget your hat, or does it need its batteries charged?")
+        
+    case .familiarAlreadyAToad:
+        print("\(prefix) Why are you trying to change a Toad into a Toad?")
+        
+    default:
+        print(prefix)
+    }
+}
+
+func exampleOne() {
+    print("") // Add an empty line in the debug area
+    
+    // 1
+    let salem = Cat(name: "Salem Saberhagen")
+    salem.speak()
+    
+    // 2
+    let witchOne = Witch(name: "Sabrina", familiar: salem)
+    do {
+        // 3
+        //try - use it to clearly indicate which line or section of code may throw errors
+        try witchOne.turnFamiliarIntoToad()
+    }
+        // 4
+    catch let error as ChangoSpellError {
+        handle(spellError: error)
+    }
+        // 5
+    catch {
+        print("Something went wrong, are you feeling OK?")
+    }
+}
+
+exampleOne()
+
+func exampleTwo() {
+    print("") // Add an empty line in the debug area
+    
+    let toad = Toad(name: "Mr. Toad")
+    toad.speak()
+    
+    let hat = Hat()
+    let witchTwo = Witch(name: "Elphaba", familiar: toad, hat: hat)
+    
+    print("") // Add an empty line in the debug area
+    
+    let newToad = try? witchTwo.turnFamiliarIntoToad()
+    if newToad != nil { // Same logic as: if let _ = newToad
+        print("Successfully changed familiar into toad.")
     }
     else {
-      return nil
+        print("Spell failed.")
     }
-  }
 }
 
-let first = Spell.create(withMagicWords: "abracadabra")
-let second = Spell.create(withMagicWords: "ascendio")
+exampleTwo()
+
+////////////////////////////////////////////////////////////////////////
+//Error propagation - defer
+////////////////////////////////////////////////////////////////////////
+
+extension Witch {
+    func speak() {
+        defer {
+            print("*1 - cackles*")
+        }
+        defer {
+            print("*2 - screeches*")
+        }
+        print("Hello my pretties.")
+    }
+}
+
+func exampleThree() {
+    print("") // Add an empty line in the debug area
     
+    let witchThree = Witch(name: "Hermione", familiar: nil, hat: nil)
+    witchThree.speak()
+}
+
+exampleThree()
