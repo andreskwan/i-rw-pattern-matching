@@ -297,8 +297,14 @@ class Dog {
 let dog = Dog()
 let puppy = Dog()
 
-//Error - reference is constant, can't be changed 
+//Error - reference is constant, can't be changed
 //dog = puppy
 
+//Value types - Int to understand value types 
+let a = 42
+let b = a
+
+//Error - value can't be mutated 
+//b += 1
 
 
