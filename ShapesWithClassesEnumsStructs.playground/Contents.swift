@@ -284,12 +284,12 @@ PlaygroundPage.current.liveView = view
 
 
 
-//
+////////////////////////////////////////////////////////////////////////
 //Reference(shared) vs Value types(unique, non-shared)
 //https://www.raywenderlich.com/112027/reference-value-types-in-swift-part-1
 //Goal - understand when should I prefer one over the other. 
 
-//LET - for reference types
+//Reference type - let
 class Dog {
     var wasFed = false
 }
@@ -310,6 +310,47 @@ let b = a
 let c = 85
 //Error - can copy another value, similar to Reference when trying to assign another obj
 //b = c
+
+////////////////////////////////////
+//which to use and when
+////////////////////////////////////
+//Classes - Cocoa APIS require NSObject for compatibility with Objective-C
+
+//Value types - When to Use them. 
+//Comparing 
+//-instance data with == makes sense
+
+
+struct Point: CustomStringConvertible {
+    var x: Float
+    var y: Float
+    
+    var description: String {
+        return "{x: \(x), y: \(y)}"
+    }
+}
+
+//Data - same internal values
+//Hardware - different memory location
+let point1 = Point(x: 2, y: 3)
+let point2 = Point(x: 2, y: 3)
+
+//let hola = "hola"
+//NSLog("%p", hola.core._baseAddress)
+
+//print("\(unsafeAddressOf(point1 as AnyObject))")
+//Value Types - Protocol - Conform The Equatable protocol
+//- good practice for all value types
+//- one function that must be implemented globally in order to compare two instances
+// == operator 
+
+extension Point: Equatable {
+    static func ==(lhs: Point, rhs: Point) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y
+    }
+}
+
+print(point1 == point2)
 
 
 
