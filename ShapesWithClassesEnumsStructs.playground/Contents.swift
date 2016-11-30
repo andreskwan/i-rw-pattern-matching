@@ -3,9 +3,11 @@
  https://www.raywenderlich.com/119881/enums-structs-and-classes-in-swift
  Example goal - Create framework for SVG
  render a svg file*/
+
 import Foundation
 import WebKit
 import PlaygroundSupport
+
 
 ///////////////////////////////////////////////////////
 //Enums
@@ -316,8 +318,9 @@ let c = 85
 ////////////////////////////////////
 //Classes - Cocoa APIS require NSObject for compatibility with Objective-C
 
+////////////////////////////////////
 //Value types - When to Use them. 
-//Comparing 
+//1 - Comparing
 //-instance data with == makes sense
 
 
@@ -352,7 +355,8 @@ extension Point: Equatable {
 
 print(point1 == point2)
 
-//Copies should have independent state
+////////////////////////////////////
+//2 - Copies should have independent state
 //What would happen if you altered the centerpoint of one of the shapes?
 
 struct Shape {
@@ -365,8 +369,15 @@ var square  = Shape(center: initialPoint)
 
 circle2.center.x = 10
 //Each Shape needs its own copy of a Point so you can maintain their state independent of each other.
+//Could you imagine the chaos of all shapes sharing the same copy of a center Point? :]
 print(circle2.center)
 print(square.center)
 
+////////////////////////////////////
+//3 - The data will be used in code across multiple threads
+//Will multiple threads access this data?
+//If threads can uniquely own the data, using value types makes the whole point moot since each owner of the data holds a unique copy rather than a shared reference.
 
+////////////////////////////////////
+//Reference types - When to Use them.
 
