@@ -304,7 +304,12 @@ let puppy = Dog()
 let a = 42
 let b = a
 
-//Error - value can't be mutated 
+//Error - value can't be mutated
 //b += 1
+
+let c = 85
+//Error - can copy another value, similar to Reference when trying to assign another obj
+//b = c
+
 
 
