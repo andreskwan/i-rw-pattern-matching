@@ -352,5 +352,21 @@ extension Point: Equatable {
 
 print(point1 == point2)
 
+//Copies should have independent state
+//What would happen if you altered the centerpoint of one of the shapes?
+
+struct Shape {
+    var center: Point
+}
+
+let initialPoint = Point(x: 0, y: 0)
+var circle2 = Shape(center: initialPoint)
+var square  = Shape(center: initialPoint)
+
+circle2.center.x = 10
+//Each Shape needs its own copy of a Point so you can maintain their state independent of each other.
+print(circle2.center)
+print(square.center)
+
 
 
