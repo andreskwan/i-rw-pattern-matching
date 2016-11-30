@@ -287,3 +287,18 @@ PlaygroundPage.current.liveView = view
 //
 //Reference(shared) vs Value types(unique, non-shared)
 //https://www.raywenderlich.com/112027/reference-value-types-in-swift-part-1
+//Goal - understand when should I prefer one over the other. 
+
+//LET - for reference types
+class Dog {
+    var wasFed = false
+}
+
+let dog = Dog()
+let puppy = Dog()
+
+//Error - reference is constant, can't be changed 
+//dog = puppy
+
+
+
