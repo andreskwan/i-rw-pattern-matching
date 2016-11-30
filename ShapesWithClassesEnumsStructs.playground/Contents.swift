@@ -1,4 +1,7 @@
-/*Goal Create framework for SVG
+/*
+ Tutorial Goal - Getting to know Enums, Structs & Classes
+ https://www.raywenderlich.com/119881/enums-structs-and-classes-in-swift
+ Example goal - Create framework for SVG
  render a svg file*/
 import Foundation
 import WebKit
@@ -278,3 +281,9 @@ print(htmlString)
 let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
 view.loadHTMLString(htmlString, baseURL: nil)
 PlaygroundPage.current.liveView = view
+
+
+
+//
+//Reference(shared) vs Value types(unique, non-shared)
+//https://www.raywenderlich.com/112027/reference-value-types-in-swift-part-1

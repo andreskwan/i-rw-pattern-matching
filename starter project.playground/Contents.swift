@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-/*
+/* -------------------------------------------
  Goal: Understand Pattern Matching in Swift
  it enables to design rules that match values against each other. 
  
@@ -48,10 +48,12 @@ func random_uniform(value: Int) -> Int {
 typealias JSONObject = [String: AnyObject]
 let file = Bundle.main.path(forResource:"tutorials", ofType: "json")!
 let url = URL(fileURLWithPath: file)
+//no error handlyng assuming that the contentsOf url is OK
 let data = try! Data(contentsOf: url)
 let json = try! JSONSerialization.jsonObject(with: data) as! [JSONObject]
 print(json)
 
+//Enum 
 //Goal Tuple pattern - create a tuple pattern to make an array of tutorials.
 enum Day: Int {
     case monday, tuesday, wednesday, thursday, friday, saturday, sunday
@@ -82,7 +84,7 @@ extension Day {
 
 
 
-//Model
+//Class - Model
 class Tutorial {
     
     //always a title
@@ -95,7 +97,9 @@ class Tutorial {
         self.day = day
     }
 }
-//Implement CustomStringConvertible so you can easily print tutorials:
+
+//Class - Extension - Protocol
+//Implementing CustomStringConvertible so I can easily print tutorials:
 extension Tutorial: CustomStringConvertible {
     var description: String {
         var scheduled = ", not scheduled"
@@ -105,12 +109,16 @@ extension Tutorial: CustomStringConvertible {
         return title + scheduled
     }
 }
+
 //Expression Pattern
 //overload the pattern matching operator in order to change its default functionality and make it work for days as well
 func ~=(lhs: Int, rhs: Day) -> Bool {
     return lhs == rhs.rawValue + 1
 }
 //Thanks to the overloaded pattern matching operator, the day object can now be matched to integer expressions. This is the expression pattern in action.
+
+//Class - Extension 
+//goal - getter - order - computed property - return order of the tutorial in the week.
 
 extension Tutorial {
     
@@ -141,18 +149,24 @@ extension Tutorial {
 
 var tutorials: [Tutorial] = []
 
+//Deserialization - From JSON - to as swift object 
+//
 //Convert the array of dictionaries/objs in JSON format into an array of Tutorials objs
 //user maps to transform the array of ditionaries to an array of tutorials
 //how to do this with for
-for jsonObject in json {
+
+//extract each jsonDictionary of keyString: valueString that represents a tutorial
+for tutorialDict in json {
+    //default values
     var currentTitle = ""
     var currentDay: Day? = nil
     
-    for (key,value) in jsonObject {
+    //Inspect the TutorialDictionary
+    for (key,value) in tutorialDict {
         //Switch will use tuple pattern matching
         switch (key, value) {
         // type-casting pattern
-        //validate if title is a string with -> is type-casting
+        //validate if the value for the key title is a string with -> is type-casting
         case ("title", is String):
             //is String -> value is String
             //type-cast when valid
