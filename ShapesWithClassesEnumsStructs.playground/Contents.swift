@@ -430,6 +430,21 @@ struct Address {
     var postalCode: String
 }
 
+//class Address {
+//    //String is also a value type
+//    var streetAddress: String
+//    var city: String
+//    var state: String
+//    var postalCode: String
+//    
+//    init(streetAddress: String, city: String, state: String, postalCode: String) {
+//        self.streetAddress = streetAddress
+//        self.city = city
+//        self.state = state
+//        self.postalCode = postalCode
+//    }
+//}
+
 class Person {          // Reference type
     var name: String      // Value type
     var address: Address  // Value type
@@ -451,3 +466,44 @@ kingSlayer.address.streetAddress = "1 King Way Apt. 1"
 // 3 - uniqueness
 madKing.address.streetAddress  // 1 King Way
 kingSlayer.address.streetAddress // 1 King Way Apt. 1
+
+struct Bill {
+    let amount: Float
+    let billedTo: Person
+}
+
+
+////////////////////////////////////
+//Nested Types - Struct with parameters of reference type
+////////////////////////////////////
+struct House {
+    var thermostat = Thermostat()
+    var oven = Oven()
+}
+
+class Temperature {
+    var fahrenheit = Double()
+    var celsius : Double {
+        return (self.fahrenheit - 32) * 5.0/9.0
+    }
+}
+
+struct Thermostat {
+    var temperature = Temperature()
+}
+
+struct Oven {
+    var temperature = Temperature()
+}
+
+var home = House()
+var temp = Temperature()
+temp.fahrenheit = 75
+home.thermostat.temperature = temp
+temp.fahrenheit = 425
+home.oven.temperature = temp
+
+home.thermostat.temperature.fahrenheit
+home.oven.temperature.fahrenheit
+
+
