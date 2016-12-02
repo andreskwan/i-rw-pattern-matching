@@ -409,3 +409,45 @@ person2.account.balance += 100.0
 person1.account.balance    // 100
 person2.account.balance    // 100
 
+////////////////////////////////////////////////////////////////////////
+//part 2/2 
+////////////////////////////////////////////////////////////////////////
+//Mixing Value and reference types
+
+//Complications related to this mixing
+//Common - References containing value types
+
+//Person - Class
+//-identify - 2 case - uniqueness matters
+//-address - structured will be stored - 1 equality matters
+
+//Struct - Value type
+struct Address {
+    //String is also a value type
+    var streetAddress: String
+    var city: String
+    var state: String
+    var postalCode: String
+}
+
+class Person {          // Reference type
+    var name: String      // Value type
+    var address: Address  // Value type
+    
+    init(name: String, address: Address) {
+        self.name = name
+        self.address = address
+    }
+}
+
+// 1
+let kingsLanding = Address(streetAddress: "1 King Way", city: "Kings Landing", state: "Westeros", postalCode: "12345")
+let madKing = Person(name: "Aerys", address: kingsLanding)
+let kingSlayer = Person(name: "Jaime", address: kingsLanding)
+
+// 2 - chagen this property should only affect this instance.
+kingSlayer.address.streetAddress = "1 King Way Apt. 1"
+
+// 3 - uniqueness
+madKing.address.streetAddress  // 1 King Way
+kingSlayer.address.streetAddress // 1 King Way Apt. 1
