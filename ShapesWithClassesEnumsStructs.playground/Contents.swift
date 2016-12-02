@@ -381,3 +381,31 @@ print(square.center)
 ////////////////////////////////////
 //Reference types - When to Use them.
 
+////////////////////////////////////
+//1 Comparing instance identity with === makes sense
+//Analogy $20 bill exchange vs Magna Carta exchange for falsification 
+//not the value/data but identity 
+
+
+////////////////////////////////////
+//2 Synchronize - You want ot create a shared, mutable state
+class Account {
+    var balance = 0.0
+}
+
+class Client {
+    let account: Account
+    init(_ account: Account) {
+        self.account = account
+    }
+}
+let account = Account()
+
+let person1 = Client(account)
+let person2 = Client(account)
+
+person2.account.balance += 100.0
+
+person1.account.balance    // 100
+person2.account.balance    // 100
+
