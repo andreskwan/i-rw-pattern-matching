@@ -506,4 +506,14 @@ home.oven.temperature = temp
 home.thermostat.temperature.fahrenheit
 home.oven.temperature.fahrenheit
 
+home.thermostat.temperature.celsius
+home.oven.temperature.celsius
+
+
+//David6p2
+
+let array = [1,2,3,4,5]
+let suma = {(x:Int, y:Int) in return (x + y)}
+let sum = array.reduce(0,suma)
+print(sum)
 
