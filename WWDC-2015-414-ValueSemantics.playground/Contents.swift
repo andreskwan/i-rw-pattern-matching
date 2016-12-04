@@ -29,7 +29,58 @@ extension Polygon: Equatable {
         //so I should see lenght of the arrays to compare 
         //and then compare each element
         //return lhs.corners.lenght == 0 || lhs.corners.lenght
-        //I'm taking advantage of colections ==
+        //I'm taking advantage of colections == 
+        //and value types
+        //array with value types is a value type 
+        //so, compare is easy.
         return lhs.corners == rhs.corners
     }
 }
+
+protocol Drawable {
+    func draw()
+}
+
+//Namespace
+enum Math{
+    static let π: CGFloat = CGFloat.pi
+}
+
+extension Circle: Drawable {
+    func draw() {
+        //why in the example app it seems that the context is not needed to draw a circle?
+        guard let context = UIGraphicsGetCurrentContext() else {
+            //does it should throw an error if there is no context?
+            return
+        }
+        
+        let startAngle: CGFloat = 0.0
+        let endAngle: CGFloat = 2 * Math.π
+        
+        context.addArc(center: center, radius: CGFloat(radius), startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        
+    }
+}
+
+extension Polygon: Drawable {
+    func draw() {
+        guard let context = UIGraphicsGetCurrentContext() else {
+            //does it should throw an error if there is no context?
+            return
+        }
+        
+        context.move(to: corners.last!)
+        
+        for point in corners {
+            context.addLine(to: point)
+        }
+        
+        context.closePath()
+        context.strokePath()
+    }
+}
+
+let polygon = Polygon()
+let circle = Circle(CGPoint(x: 0, y:0) , 10)
+
+let diagramArray: [Drawable] = [polygon, circle]
