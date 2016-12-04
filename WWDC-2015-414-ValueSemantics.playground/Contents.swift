@@ -18,3 +18,18 @@ extension Circle: Equatable {
         return lhs.center == rhs.center && lhs.radius == rhs.radius
     }
 }
+
+struct Polygon {
+    var corners: [CGPoint] = []
+}
+
+extension Polygon: Equatable {
+    static func ==(lhs: Polygon, rhs: Polygon) -> Bool {
+        //this should compare each element of the array 
+        //so I should see lenght of the arrays to compare 
+        //and then compare each element
+        //return lhs.corners.lenght == 0 || lhs.corners.lenght
+        //I'm taking advantage of colections ==
+        return lhs.corners == rhs.corners
+    }
+}
