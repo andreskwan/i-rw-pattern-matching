@@ -378,6 +378,17 @@ print(square.center)
 //Will multiple threads access this data?
 //If threads can uniquely own the data, using value types makes the whole point moot since each owner of the data holds a unique copy rather than a shared reference.
 
+////////////////////////////////////////////////////////////////////////
+//WWDC 2015 408
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 ////////////////////////////////////
 //Reference types - When to Use them.
 
