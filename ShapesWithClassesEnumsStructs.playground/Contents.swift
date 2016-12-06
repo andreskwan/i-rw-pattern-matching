@@ -527,13 +527,21 @@ print(sum)
 ////////////////////////////////////////////////////////////////////////
 //WWDC 2015 408
 ////////////////////////////////////////////////////////////////////////
-struct Renderer {
+protocol Renderer {
+    func moveTo(p: CGPoint)
+    
+    func lineTo(p: CGPoint)
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
+}
+
+struct TestRenderer : Renderer {
     func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
     
     func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-        print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
+    print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
     }
 }
 
@@ -595,7 +603,7 @@ var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
 
 var diagram = Diagram(elements: [circle408, triangle])
 
-diagram.draw(renderer: Renderer())
+diagram.draw(renderer: TestRenderer())
 
 //Rewrite render to use CoreGraphics 22:47
 
