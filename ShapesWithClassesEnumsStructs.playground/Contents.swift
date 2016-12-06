@@ -292,6 +292,8 @@ PlaygroundPage.current.liveView = view
 //Reference(shared) vs Value types(unique, non-shared)
 //https://www.raywenderlich.com/112027/reference-value-types-in-swift-part-1
 //Goal - understand when should I prefer one over the other. 
+////////////////////////////////////////////////////////////////////////
+
 
 //Reference type - let
 class Dog {
@@ -380,19 +382,11 @@ print(square.center)
 //Will multiple threads access this data?
 //If threads can uniquely own the data, using value types makes the whole point moot since each owner of the data holds a unique copy rather than a shared reference.
 
+
+
 ////////////////////////////////////////////////////////////////////////
-//WWDC 2015 408
-////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-////////////////////////////////////
 //Reference types - When to Use them.
+////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////
 //1 Comparing instance identity with === makes sense
@@ -530,3 +524,47 @@ let suma = {(x:Int, y:Int) in return (x + y)}
 let sum = array.reduce(0,suma)
 print(sum)
 
+////////////////////////////////////////////////////////////////////////
+//WWDC 2015 408
+////////////////////////////////////////////////////////////////////////
+struct Renderer {
+    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
+    
+    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        print("arcAt(\(center), radius: \(radius), startAndle: \(startAngle), endAngle: \(endAngle)")
+    }
+}
+
+//Protocol - Extension - Can't add function declaration to a protocol!!!
+//should add implementation
+//of a method
+//So I create a new protocol
+protocol DrawableCrusty {
+    func draw(renderer: Renderer)
+}
+
+//Struc - Protocol - implementation - Adopting a Protocol 
+//value type
+struct Polygon : DrawableCrusty {
+    //value type
+    var corners: [CGPoint] = []
+    
+    func draw(renderer: Renderer) {
+        renderer.moveTo(p: corners.last!)
+        for point in corners {
+            renderer.lineTo(p: point)
+        }
+    }
+}
+
+//Struct - Protocol - Extension
+extension Circle : DrawableCrusty {
+    func draw(renderer: Renderer) {
+        renderer.arcAt(center: CGPoint(x: center.x, y: center.y),
+                       radius: CGFloat(radius),
+                       startAngle: 0.0,
+                       endAngle: 2 *  CGFloat.pi )
+    }
+}
