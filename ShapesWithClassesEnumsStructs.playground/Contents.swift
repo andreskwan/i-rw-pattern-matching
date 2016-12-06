@@ -93,22 +93,7 @@ Math.phi
 
 //Goal - allow users to create their own custom shpes within the SVG
 
-//Protocol - I want my shapes to be drawable
-protocol Drawable {
-    //defines what it means to be Drawable
-    //no drawing technology is specified 
-    //so I could implement it in terms of anything!
-    //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
-    func draw(with context: DrawingContext)
-}
-
-//Protocol - I need a context to draw my shapes
-protocol DrawingContext {
-    //Knows how to draw pure geometric types(graphycal primitives)
-    func draw(circle: Circle)
-    func draw(rectangle: Rectangle)
-}
-
+//WWDC 2015 408
 struct Renderer {
     func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
     
@@ -118,6 +103,31 @@ struct Renderer {
         print("arcAt(\(center), radius: \(radius), startAndle: \(startAngle), endAngle: \(endAngle)")
     }
 }
+
+//Protocol - I want my shapes to be drawable
+protocol Drawable {
+    //defines what it means to be Drawable
+    //no drawing technology is specified 
+    //so I could implement it in terms of anything!
+    //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
+    func draw(with context: DrawingContext)
+}
+
+//WWDC 2015 408
+//Can't add function declaration to a protocol!!!
+//should add implementation
+//of a method
+extension Drawable {
+    func draw(renderer: Renderer)
+}
+
+//Protocol - I need a context to draw my shapes
+protocol DrawingContext {
+    //Knows how to draw pure geometric types(graphycal primitives)
+    func draw(circle: Circle)
+    func draw(rectangle: Rectangle)
+}
+
 
 //Struc - Adopting a Protocol - implementation
 struct Circle : Drawable {
