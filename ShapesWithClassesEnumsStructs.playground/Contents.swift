@@ -109,6 +109,16 @@ protocol DrawingContext {
     func draw(rectangle: Rectangle)
 }
 
+struct Renderer {
+    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
+    
+    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        print("arcAt(\(center), radius: \(radius), startAndle: \(startAngle), endAngle: \(endAngle)")
+    }
+}
+
 //Struc - Adopting a Protocol - implementation
 struct Circle : Drawable {
     //Struct - to group together stored properties
