@@ -93,17 +93,6 @@ Math.phi
 
 //Goal - allow users to create their own custom shpes within the SVG
 
-//WWDC 2015 408
-struct Renderer {
-    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
-    
-    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
-    
-    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-        print("arcAt(\(center), radius: \(radius), startAndle: \(startAngle), endAngle: \(endAngle)")
-    }
-}
-
 //Protocol - I want my shapes to be drawable
 protocol Drawable {
     //defines what it means to be Drawable
@@ -111,14 +100,6 @@ protocol Drawable {
     //so I could implement it in terms of anything!
     //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
     func draw(with context: DrawingContext)
-}
-
-//WWDC 2015 408
-//Can't add function declaration to a protocol!!!
-//should add implementation
-//of a method
-extension Drawable {
-    func draw(renderer: Renderer)
 }
 
 //Protocol - I need a context to draw my shapes
@@ -232,15 +213,6 @@ extension Circle {
         }
     }
     
-    // Example of getter-only computed properties
-    var area: Double {
-        return radius * radius * Double.pi
-    }
-    
-    var perimeter: Double {
-        return 2 * radius * Double.pi
-    }
-    
     //Struct - Mutation
     //is ok if this function wants to mutate the struct.
     //change stored properties on the struct
@@ -271,8 +243,18 @@ protocol ClosedShape {
     var perimeter: Double { get }
 }
 
+extension Circle: ClosedShape {
+    // Example of getter-only computed properties
+    var area: Double {
+        return Double(radius) * Double(radius) * Double.pi
+    }
+    
+    var perimeter: Double {
+        return 2 * Double(radius) * Double.pi
+    }
+}
+
 //C.S - Protocol - retroactively adopting the protocol
-extension Circle: ClosedShape {}
 extension Rectangle: ClosedShape {}
 
 let circle = Circle()
