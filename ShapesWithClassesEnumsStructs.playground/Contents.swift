@@ -568,3 +568,15 @@ extension Circle : DrawableCrusty {
                        endAngle: 2 *  CGFloat.pi )
     }
 }
+
+//Struct - value type
+struct Diagram : DrawableCrusty {
+    var elements: [DrawableCrusty] = []
+    
+    func draw(renderer: Renderer) {
+        for f in elements {
+            f.draw(renderer: renderer)
+        }
+    }
+}
+
