@@ -533,7 +533,7 @@ struct Renderer {
     func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-        print("arcAt(\(center), radius: \(radius), startAndle: \(startAngle), endAngle: \(endAngle)")
+        print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
     }
 }
 
@@ -580,6 +580,7 @@ struct Diagram : DrawableCrusty {
     }
 }
 
+//Struct - extension - initializer
 extension Circle {
     init(center point: (Double, Double), radius length: Double) {
         self.center = point
@@ -592,5 +593,10 @@ var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
                                  CGPoint(x: 268.69, y: 286.625),
                                  CGPoint(x: 106.31, y: 286.625)])
 
+var diagram = Diagram(elements: [circle408, triangle])
+
+diagram.draw(renderer: Renderer())
+
+//Rewrite render to use CoreGraphics 22:47
 
 
