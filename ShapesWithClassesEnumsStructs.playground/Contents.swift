@@ -580,3 +580,17 @@ struct Diagram : DrawableCrusty {
     }
 }
 
+extension Circle {
+    init(center point: (Double, Double), radius length: Double) {
+        self.center = point
+        self.radius = length
+    }
+}
+
+var circle408 = Circle(center: (187.5, 333.5), radius: 93.75)
+var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
+                                 CGPoint(x: 268.69, y: 286.625),
+                                 CGPoint(x: 106.31, y: 286.625)])
+
+
+
