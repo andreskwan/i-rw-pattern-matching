@@ -84,3 +84,25 @@ let polygon = Polygon()
 let circle = Circle(CGPoint(x: 0, y:0) , 10)
 
 let diagramArray: [Drawable] = [polygon, circle]
+
+struct Diagram {
+    var items: [Drawable] = []
+    
+    mutating func addItem(item: Drawable) {
+        items.append(item)
+    }
+}
+
+extension Diagram: Drawable {
+    func draw() {
+        for item in items {
+            item.draw()
+        }
+    }
+}
+
+extension Diagram: Equatable {
+    static func ==(lhs: Diagram, rhs: Diagram) -> Bool {
+        return lhs.items == rhs.items
+    }
+}
