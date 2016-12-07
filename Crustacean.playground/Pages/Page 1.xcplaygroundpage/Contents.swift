@@ -1,7 +1,7 @@
 //: # Crustacean
 //:
 //: Protocol-Oriented Programming with Value Types
-
+import UIKit
 import CoreGraphics
 let twoPi = CGFloat(M_PI * 2)
 
@@ -27,9 +27,9 @@ protocol Renderer {
 //: can't always see everything by looking at graphics.  For an
 //: example, see the "nested diagram" section below.
 struct TestRenderer : Renderer {
-    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y))") }
+    func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y))") }
     
-    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y))") }
+    func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y))") }
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
         print("arcAt(\(center), radius: \(radius)," + " startAngle: \(startAngle), endAngle: \(endAngle))")
@@ -45,15 +45,15 @@ protocol Drawable {
 //: Basic `Drawable`s
 struct Polygon : Drawable {
     func draw(renderer: Renderer) {
-        renderer.moveTo(corners.last!)
-        for p in corners { renderer.lineTo(p) }
+        renderer.moveTo(position: corners.last!)
+        for p in corners { renderer.lineTo(position: p) }
     }
     var corners: [CGPoint] = []
 }
 
 struct Circle : Drawable {
     func draw(renderer: Renderer) {
-        renderer.arcAt(center, radius: radius, startAngle: 0.0, endAngle: twoPi)
+        renderer.arcAt(center: center, radius: radius, startAngle: 0.0, endAngle: twoPi)
     }
     var center: CGPoint
     var radius: CGFloat
@@ -64,7 +64,7 @@ struct Circle : Drawable {
 struct Diagram : Drawable {
     func draw(renderer: Renderer) {
         for f in elements {
-            f.draw(renderer)
+            f.draw(renderer: renderer)
         }
     }
     mutating func add(other: Drawable) {
@@ -80,15 +80,20 @@ struct Diagram : Drawable {
 //: protocol.
 extension CGContext : Renderer {
     func moveTo(position: CGPoint) {
-        CGContextMoveToPoint(self, position.x, position.y)
+        let context = UIGraphicsGetCurrentContext()!
+        context.moveTo(position: position)
+//        CGContextMoveToPoint(self, position.x, position.y)
     }
     func lineTo(position: CGPoint) {
-        CGContextAddLineToPoint(self, position.x, position.y)
+        let context = UIGraphicsGetCurrentContext()!
+//        CGContextAddLineToPoint(self, position.x, position.y)
+        context.addLine(to: position)
     }
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-        let arc = CGPathCreateMutable()
-        CGPathAddArc(arc, nil, center.x, center.y, radius, startAngle, endAngle, true)
-        CGContextAddPath(self, arc)
+        let path = CGMutablePath()
+//        CGPathAddArc(arc, nil, center.x, center.y, radius, startAngle, endAngle, true)
+//        self.addPath(arc)
+        path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
     }
 }
 
@@ -123,17 +128,17 @@ struct ScaledRenderer : Renderer {
     let base: Renderer
     let scale: CGFloat
     
-    func moveTo(p: CGPoint) {
-        base.moveTo(CGPoint(x: p.x * scale, y: p.y * scale))
+    func moveTo(position p: CGPoint) {
+        base.moveTo(position: CGPoint(x: p.x * scale, y: p.y * scale))
     }
     
-    func lineTo(p: CGPoint) {
-        base.lineTo(CGPoint(x: p.x * scale, y: p.y * scale))
+    func lineTo(position p: CGPoint) {
+        base.lineTo(position: CGPoint(x: p.x * scale, y: p.y * scale))
     }
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
         let scaledCenter = CGPoint(x: center.x * scale, y: center.y * scale)
-        base.arcAt(scaledCenter, radius: radius * scale, startAngle: startAngle, endAngle: endAngle)
+        base.arcAt(center: scaledCenter, radius: radius * scale, startAngle: startAngle, endAngle: endAngle)
     }
 }
 
@@ -143,7 +148,7 @@ struct Scaled<Base: Drawable> : Drawable {
     var subject: Base
     
     func draw(renderer: Renderer) {
-        subject.draw(ScaledRenderer(base: renderer, scale: scale))
+        subject.draw(renderer: ScaledRenderer(base: renderer, scale: scale))
     }
 }
 
@@ -152,11 +157,11 @@ diagram.elements.append(Scaled(scale: 0.3, subject: diagram))
 
 // Dump the diagram to the console. Use View>Debug Area>Show Debug
 // Area (shift-cmd-Y) to observe the output.
-diagram.draw(TestRenderer())
+diagram.draw(renderer: TestRenderer())
 
 // Also show it in the view. To see the result, View>Assistant
 // Editor>Show Assistant Editor (opt-cmd-Return).
-showCoreGraphicsDiagram("Diagram") { diagram.draw($0) }
+showCoreGraphicsDiagram(title: "Diagram") { diagram.draw(renderer: $0) }
 
 //: ## [Next](@next)
 //: The license for this document is available [here](License).
