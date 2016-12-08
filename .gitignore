@@ -67,3 +67,4 @@ iOSInjectionProject/
 
 ### Objective-C Patch ###
 *.xcscmblueprint
+*.xcuserstate
