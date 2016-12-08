@@ -7,6 +7,8 @@
 import Foundation
 import WebKit
 import PlaygroundSupport
+import UIKit
+import CoreGraphics
 
 
 ///////////////////////////////////////////////////////
@@ -614,5 +616,6 @@ extension CGContext : Renderer {
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {}
 }
+
 
 
