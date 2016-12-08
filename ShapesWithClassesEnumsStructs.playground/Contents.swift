@@ -530,17 +530,17 @@ print(sum)
 //WWDC 2015 408
 ////////////////////////////////////////////////////////////////////////
 protocol Renderer {
-    func moveTo(p: CGPoint)
+    func moveTo(position p: CGPoint)
     
-    func lineTo(p: CGPoint)
+    func lineTo(position p: CGPoint)
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
 }
 
 struct TestRenderer : Renderer {
-    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
+    func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
     
-    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
+    func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
     print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
@@ -562,9 +562,9 @@ struct Polygon : DrawableCrusty {
     var corners: [CGPoint] = []
     
     func draw(renderer: Renderer) {
-        renderer.moveTo(p: corners.last!)
+        renderer.moveTo(position: corners.last!)
         for point in corners {
-            renderer.lineTo(p: point)
+            renderer.lineTo(position: point)
         }
     }
 }
