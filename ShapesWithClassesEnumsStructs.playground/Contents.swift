@@ -610,12 +610,21 @@ diagram.draw(renderer: TestRenderer())
 //Rewrite render to use CoreGraphics 22:47
 
 extension CGContext : Renderer {
-    func moveTo(p: CGPoint) { }
+    func moveTo(position p: CGPoint) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.move(to: p)
+    }
     
-    func lineTo(p: CGPoint) { }
+    func lineTo(position p: CGPoint) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.addLine(to: p)
+    }
     
-    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {}
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        let path = CGMutablePath()
+        path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        self.addPath(path)
+    }
 }
-
 
 
