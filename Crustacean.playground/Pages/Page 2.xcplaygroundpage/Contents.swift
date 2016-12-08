@@ -5,7 +5,7 @@
 //: This page does everything the [previous one](@previous) does, but also
 //: demonstrates some more sophisticated techniques that would make the first
 //: page harder to grasp.
-
+import UIKit
 import CoreGraphics
 let twoPi = CGFloat(M_PI * 2)
 
@@ -37,9 +37,9 @@ protocol Renderer {
 //: can't always see everything by looking at graphics.  For an
 //: example, see the "nested diagram" section below.
 struct TestRenderer : Renderer {
-    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y))") }
+    func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y))") }
     
-    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y))") }
+    func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y))") }
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
         print("arcAt(\(center), radius: \(radius)," + " startAngle: \(startAngle), endAngle: \(endAngle))")
@@ -56,15 +56,15 @@ protocol Drawable {
 //: Basic `Drawable`s
 struct Polygon : Drawable {
     func draw(renderer: Renderer) {
-        renderer.moveTo(corners.last!)
-        for p in corners { renderer.lineTo(p) }
+        renderer.moveTo(position: corners.last!)
+        for p in corners { renderer.lineTo(position: p) }
     }
     var corners: [CGPoint] = []
 }
 
 struct Circle : Drawable {
     func draw(renderer: Renderer) {
-        renderer.arcAt(center, radius: radius, startAngle: 0.0, endAngle: twoPi)
+        renderer.arcAt(center: center, radius: radius, startAngle: 0.0, endAngle: twoPi)
     }
     var center: CGPoint
     var radius: CGFloat
@@ -75,7 +75,7 @@ struct Circle : Drawable {
 struct Diagram : Drawable {
     func draw(renderer: Renderer) {
         for f in elements {
-            f.draw(renderer)
+            f.draw(renderer: renderer)
         }
     }
     mutating func add(other: Drawable) {
@@ -89,23 +89,25 @@ struct Diagram : Drawable {
 //: rather than a protocol.
 extension CGContext : Renderer {
     func moveTo(position: CGPoint) {
-        CGContextMoveToPoint(self, position.x, position.y)
+        let context = UIGraphicsGetCurrentContext()!
+        context.move(to: position)
     }
     func lineTo(position: CGPoint) {
-        CGContextAddLineToPoint(self, position.x, position.y)
+        let context = UIGraphicsGetCurrentContext()!
+        context.addLine(to: position)
     }
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-        let arc = CGPathCreateMutable()
-        CGPathAddArc(arc, nil, center.x, center.y, radius, startAngle, endAngle, true)
-        CGContextAddPath(self, arc)
+        let path = CGMutablePath()
+        path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        self.addPath(path)
     }
 }
 
 // A bubble is made of an outer circle and an inner highlight
 struct Bubble : Drawable {
-    func draw(r: Renderer) {
-        r.circleAt(center, radius: radius)
-        r.circleAt(highlightCenter, radius: highlightRadius)
+    func draw(renderer r: Renderer) {
+        r.circleAt(center: center, radius: radius)
+        r.circleAt(center: highlightCenter, radius: highlightRadius)
     }
     
     var center: CGPoint
@@ -141,17 +143,17 @@ struct ScaledRenderer : Renderer {
     let base: Renderer
     let scale: CGFloat
     
-    func moveTo(p: CGPoint) {
-        base.moveTo(CGPoint(x: p.x * scale, y: p.y * scale))
+    func moveTo(position p: CGPoint) {
+        base.moveTo(position: CGPoint(x: p.x * scale, y: p.y * scale))
     }
     
-    func lineTo(p: CGPoint) {
-        base.lineTo(CGPoint(x: p.x * scale, y: p.y * scale))
+    func lineTo(position p: CGPoint) {
+        base.lineTo(position: CGPoint(x: p.x * scale, y: p.y * scale))
     }
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
         let scaledCenter = CGPoint(x: center.x * scale, y: center.y * scale)
-        base.arcAt(scaledCenter, radius: radius * scale, startAngle: startAngle, endAngle: endAngle
+        base.arcAt(center: scaledCenter, radius: radius * scale, startAngle: startAngle, endAngle: endAngle
         )
     }
 }
@@ -162,7 +164,7 @@ struct Scaled<Base: Drawable> : Drawable {
     var subject: Base
     
     func draw(renderer: Renderer) {
-        subject.draw(ScaledRenderer(base: renderer, scale: scale))
+        subject.draw(renderer: ScaledRenderer(base: renderer, scale: scale))
     }
 }
 
@@ -175,7 +177,7 @@ extension Renderer {
     // types conforming to `Renderer` can provide a more-specific
     // `circleAt` that will always be used in lieu of this one.
     func circleAt(center: CGPoint, radius: CGFloat) {
-        arcAt(center, radius: radius, startAngle: 0.0, endAngle: twoPi)
+        arcAt(center: center, radius: radius, startAngle: 0.0, endAngle: twoPi)
     }
     
     // `rectangleAt` is not a protocol requirement, so it is
@@ -184,11 +186,11 @@ extension Renderer {
     // `rectangleAt` will be used in lieu of any implementation
     // provided by the conforming type.
     func rectangleAt(r: CGRect) {
-        moveTo(CGPoint(x: r.minX, y: r.minY))
-        lineTo(CGPoint(x: r.minX, y: r.maxY))
-        lineTo(CGPoint(x: r.maxX, y: r.maxY))
-        lineTo(CGPoint(x: r.maxX, y: r.minY))
-        lineTo(CGPoint(x: r.minX, y: r.minY))
+        moveTo(position: CGPoint(x: r.minX, y: r.minY))
+        lineTo(position: CGPoint(x: r.minX, y: r.maxY))
+        lineTo(position: CGPoint(x: r.maxX, y: r.maxY))
+        lineTo(position: CGPoint(x: r.maxX, y: r.minY))
+        lineTo(position: CGPoint(x: r.minX, y: r.minY))
     }
 }
 
@@ -204,13 +206,14 @@ extension TestRenderer {
 
 extension CGContext {
     func rectangleAt(r: CGRect) {
-        CGContextAddRect(self, r)
+        let context = UIGraphicsGetCurrentContext()!
+        context.addRect(r)
     }
 }
 
 struct Rectangle : Drawable {
-    func draw(r: Renderer) {
-        r.rectangleAt(bounds)
+    func draw(renderer r: Renderer) {
+        r.rectangleAt(r: bounds)
     }
     var bounds: CGRect
 }
@@ -267,13 +270,13 @@ extension Equatable where Self : Drawable {
 //: `Scale` and `Diagram`.
 extension Scaled : Equatable {}
 func == <T>(lhs: Scaled<T>, rhs: Scaled<T>) -> Bool {
-    return lhs.scale == rhs.scale && lhs.subject.isEqualTo(rhs.subject)
+    return lhs.scale == rhs.scale && lhs.subject.isEqualTo(other: rhs.subject)
 }
 
 extension Diagram : Equatable {}
 func == (lhs: Diagram, rhs: Diagram) -> Bool {
     return lhs.elements.count == rhs.elements.count
-        && !zip(lhs.elements, rhs.elements).contains { !$0.isEqualTo($1) }
+        && !zip(lhs.elements, rhs.elements).contains { !$0.isEqualTo(other: $1) }
 }
 
 //: Building a diagram out of other `Drawable`s
@@ -294,31 +297,31 @@ func sampleDiagram(frame: CGRect) -> Diagram {
     let center = CGPoint(x: frame.midX, y: frame.midY)
     
     var circle = Circle(center: center, radius: r)
-    sample.add(circle)
-    sample.add(regularPolygon(3, center: center, radius: r))
+    sample.add(other: circle)
+    sample.add(other: regularPolygon(n: 3, center: center, radius: r))
     
     let s = CGRect(x: center.x - r/3, y: center.y, width: r/6, height: r/6)
-    sample.add(Rectangle(bounds: s))
+    sample.add(other: Rectangle(bounds: s))
     
     // adjust the circle
     circle.center.y += circle.radius * 2.5
     
     // append the circle again
-    sample.add(circle)
+    sample.add(other: circle)
     return sample
 }
 
 let drawingArea = CGRect(x: 0.0, y: 0.0, width: 375.0, height: 667.0)
 
 // Create a simple diagram
-var sample = sampleDiagram(drawingArea)
+var sample = sampleDiagram(frame: drawingArea)
 
 // Nest the diagram inside itself, demonstrating that each diagram
 // variable is a logically independent value.  If they weren't, we'd
 // end up in an infinite drawing recursion.
 let nestDiagram = true
 if nestDiagram {
-    sample.add(Scaled(scale: 0.3, subject: sample))
+    sample.add(other: Scaled(scale: 0.3, subject: sample))
     // do it twice if you want to get fancy
     // sample.add(Scaled(scale: 0.5, subject: sample))
 }
@@ -329,20 +332,20 @@ if addBubble {
     let radius = drawingArea.width / 10
     let margin = radius * 1.2
     let center = CGPoint(x: drawingArea.maxX - margin, y: drawingArea.minY + margin)
-    sample.add(Bubble(center: center, radius: radius))
+    sample.add(other: Bubble(center: center, radius: radius))
 }
 
 // Dump the diagram to the console. Use View>Debug Area>Show Debug
 // Area (shift-cmd-Y) to observe the output.
 
-TestRenderer().rectangleAt(drawingArea)
+TestRenderer().rectangleAt(r: drawingArea)
 print("--- \"rectangleAt\" appears above this line but not below ---")
 // Note: the fact that "rectangleAt" doesn't appear below, but
 // "circleAt" does, serves as a demonstration of how dispatching through
 // protocols works: methods in protocol extensions that don't match a
 // requirement (such as rectangleAt) are dispatched statically.
-sample.draw(TestRenderer())
+sample.draw(renderer: TestRenderer())
 
 // Also show it in the view. To see the result, View>Assistant
 // Editor>Show Assistant Editor (opt-cmd-Return).
-showCoreGraphicsDiagram("Diagram") { sample.draw($0) }
+showCoreGraphicsDiagram("Diagram") { sample.draw(renderer: $0) }

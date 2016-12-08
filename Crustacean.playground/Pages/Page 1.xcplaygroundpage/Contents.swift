@@ -157,11 +157,11 @@ diagram.elements.append(Scaled(scale: 0.3, subject: diagram))
 
 // Dump the diagram to the console. Use View>Debug Area>Show Debug
 // Area (shift-cmd-Y) to observe the output.
-diagram.draw(renderer: TestRenderer())
+//diagram.draw(renderer: TestRenderer())
 
 // Also show it in the view. To see the result, View>Assistant
 // Editor>Show Assistant Editor (opt-cmd-Return).
-showCoreGraphicsDiagram(title: "Diagram") { diagram.draw(renderer: $0) }
+showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
 
 //: ## [Next](@next)
 //: The license for this document is available [here](License).

@@ -26,7 +26,7 @@ class CoreGraphicsDiagramView : UIView {
 /// Shows a `UIView` in the current playground that draws itself by invoking
 /// `draw` on a `CGContext`, then stroking the context's current path in a
 /// pleasing light blue.
-public func showCoreGraphicsDiagram(title: String, draw: @escaping (CGContext)->()) {
+public func showCoreGraphicsDiagram(_ title: String, draw: @escaping (CGContext)->()) {
     let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
     diagramView.draw = draw
     diagramView.setNeedsDisplay()
