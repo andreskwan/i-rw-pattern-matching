@@ -482,49 +482,6 @@ struct Bill {
 }
 
 
-////////////////////////////////////
-//Nested Types - Struct with parameters of reference type
-////////////////////////////////////
-struct House {
-    var thermostat = Thermostat()
-    var oven = Oven()
-}
-
-class Temperature {
-    var fahrenheit = Double()
-    var celsius : Double {
-        return (self.fahrenheit - 32) * 5.0/9.0
-    }
-}
-
-struct Thermostat {
-    var temperature = Temperature()
-}
-
-struct Oven {
-    var temperature = Temperature()
-}
-
-var home = House()
-var temp = Temperature()
-temp.fahrenheit = 75
-home.thermostat.temperature = temp
-temp.fahrenheit = 425
-home.oven.temperature = temp
-
-home.thermostat.temperature.fahrenheit
-home.oven.temperature.fahrenheit
-
-home.thermostat.temperature.celsius
-home.oven.temperature.celsius
-
-
-//David6p2
-
-let array = [1,2,3,4,5]
-let suma = {(x:Int, y:Int) in return (x + y)}
-let sum = array.reduce(0,suma)
-print(sum)
 
 ////////////////////////////////////////////////////////////////////////
 //WWDC 2015 408
