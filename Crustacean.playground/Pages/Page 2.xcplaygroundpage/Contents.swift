@@ -89,11 +89,11 @@ struct Diagram : Drawable {
 //: rather than a protocol.
 extension CGContext : Renderer {
     func moveTo(position: CGPoint) {
-        let context = UIGraphicsGetCurrentContext()!
+        guard let context = UIGraphicsGetCurrentContext() else { return }
         context.move(to: position)
     }
     func lineTo(position: CGPoint) {
-        let context = UIGraphicsGetCurrentContext()!
+        guard let context = UIGraphicsGetCurrentContext() else { return }
         context.addLine(to: position)
     }
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {

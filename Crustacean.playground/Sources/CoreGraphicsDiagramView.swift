@@ -11,10 +11,11 @@ class CoreGraphicsDiagramView : UIView {
         let context = UIGraphicsGetCurrentContext()!
         context.saveGState()
         draw(context)
-        
-        let lightBlue = CGColor(
-            colorSpace: CGColorSpaceCreateDeviceRGB(), components: [0.222, 0.617, 0.976, 1.0])
-        context.setStrokeColor(lightBlue!)
+        let red = CGFloat(0.222)
+        let green = CGFloat(0.617)
+        let blue = CGFloat(0.976)
+        let lightBlue = UIColor(red: red, green: green, blue: blue, alpha: 1.0).cgColor
+        context.setStrokeColor(lightBlue)
         context.setLineWidth(3)
         context.strokePath()
         context.restoreGState()
