@@ -10,6 +10,7 @@ import PlaygroundSupport
 import UIKit
 import CoreGraphics
 
+let twoPi = CGFloat(M_PI * 2)
 
 ///////////////////////////////////////////////////////
 //Enums
@@ -95,22 +96,60 @@ Math.phi
 
 //Goal - allow users to create their own custom shpes within the SVG
 
+protocol Renderer {
+    func moveTo(position p: CGPoint)
+    
+    func lineTo(position p: CGPoint)
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
+    
+    /// Draws a complete circle with the given center and radius.
+    ///
+    /// Note: a default implementation of `circleAt` is provided by a
+    /// protocol extension, so conforming types need not supply their own.
+    func circleAt(center: CGPoint, radius: CGFloat)
+}
+
+extension Renderer {
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        
+    }
+    
+    func lineTo(position p: CGPoint) {
+        
+    }
+    
+    func moveTo(position p: CGPoint) {
+        
+    }
+    // types conforming to `Renderer` can provide a more-specific
+    // `circleAt` that will always be used in lieu of this one.
+    func circleAt(center: CGPoint, radius: CGFloat) {
+        arcAt(center: center, radius: radius, startAngle: 0.0, endAngle: twoPi)
+    }
+    
+    // `rectangleAt` is not a protocol requirement, so it is
+    // dispatched statically.  In a context where the concrete type
+    // conforming to `Renderer` is not known at compile-time, this
+    // `rectangleAt` will be used in lieu of any implementation
+    // provided by the conforming type.
+    func rectangleAt(r: CGRect) {
+        moveTo(position: CGPoint(x: r.minX, y: r.minY))
+        lineTo(position: CGPoint(x: r.minX, y: r.maxY))
+        lineTo(position: CGPoint(x: r.maxX, y: r.maxY))
+        lineTo(position: CGPoint(x: r.maxX, y: r.minY))
+        lineTo(position: CGPoint(x: r.minX, y: r.minY))
+    }
+}
+
 //Protocol - I want my shapes to be drawable
+//defines what it means to be Drawable
+//no drawing technology is specified
+//so I could implement it in terms of anything!
+//SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
 protocol Drawable {
-    //defines what it means to be Drawable
-    //no drawing technology is specified
-    //so I could implement it in terms of anything!
-    //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
-    func draw(with context: DrawingContext)
+    func draw(renderer: Renderer)
 }
-
-//Protocol - I need a context to draw my shapes
-protocol DrawingContext {
-    //Knows how to draw pure geometric types(graphycal primitives)
-    func draw(circle: Circle)
-    func draw(rectangle: Rectangle)
-}
-
 
 //Struc - Adopting a Protocol - implementation
 struct Circle : Drawable {
@@ -122,9 +161,11 @@ struct Circle : Drawable {
     var radius = 50.0
     
     // Implementing the Drawable protocol.
-    func draw(with context: DrawingContext) {
-        //defer the draw work to the DrawingContext
-        context.draw(circle: self)
+    func draw(renderer: Renderer) {
+        renderer.arcAt(center: CGPoint(x: center.x, y: center.y),
+                       radius: CGFloat(radius),
+                       startAngle: 0.0,
+                       endAngle: 2 *  CGFloat.pi )
     }
 }
 
@@ -135,27 +176,32 @@ struct Rectangle : Drawable {
     var origin = (x: 75.0, y: 50.0)
     var size = (width: 100.0, height: 100.0)
     
-    func draw(with context: DrawingContext) {
-        //defer the draw work to the DrawingContext
-        context.draw(rectangle: self)
+    func draw(renderer r: Renderer) {
+        r.rectangleAt(r: bounds)
     }
 }
 
-//Class - Adopting the DrawingContext protocol
-final class SVGContext : DrawingContext {
-    
+extension Rectangle {
+    var bounds: CGRect {
+        return CGRect(x: origin.x, y: origin.y , width: size.width , height: size.height)
+    }
+}
+
+//Class - Adopting the Renderer protocol
+final class SVGRenderer : Renderer {
+
     private var commands: [String] = []
     
     //Context size
     var width = 0
     var height = 0
     
-    // 1 conform to the DrawingContext protocol
+    // 1 conform to the Renderer protocol
     func draw(circle: Circle) {
         commands.append("<circle cx='\(circle.center.x)' cy='\(circle.center.y)\' r='\(circle.radius)' stroke='\(circle.strokeColor)' fill='\(circle.fillColor)' stroke-width='\(circle.strokeWidth)'  />")
     }
     
-    // 2 conform to the DrawingContext protocol
+    // 2 conform to the Renderer protocol
     func draw(rectangle: Rectangle) {
         commands.append("<rect x='\(rectangle.origin.x)' y='\(rectangle.origin.y)' width='\(rectangle.size.width)' height='\(rectangle.size.height)' stroke='\(rectangle.strokeColor)' fill='\(rectangle.fillColor)' stroke-width='\(rectangle.strokeWidth)' />")
     }
@@ -187,13 +233,13 @@ struct SVGDocument {
     var drawables: [Drawable] = []
     
     //Getters - Computed property
-    //- Creates an SVGContext and returns the htmlString from the context.
+    //- Instantiate an SVGRenderer and returns the htmlString from the context.
     var htmlString: String {
-        let context = SVGContext()
+        let context = SVGRenderer()
         context.width = 960
         context.height = 500
         for drawable in drawables {
-            drawable.draw(with: context)
+            drawable.draw(renderer: context)
         }
         return context.htmlString
     }
@@ -300,22 +346,6 @@ document.append(circle)
 let htmlString = document.htmlString
 //print(htmlString)
 
-//let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
-//view.loadHTMLString(htmlString, baseURL: nil)
-//PlaygroundPage.current.liveView = view
-
-
-////////////////////////////////////////////////////////////////////////
-//WWDC 2015 408
-////////////////////////////////////////////////////////////////////////
-protocol Renderer {
-    func moveTo(position p: CGPoint)
-    
-    func lineTo(position p: CGPoint)
-    
-    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
-}
-
 struct TestRenderer : Renderer {
     func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
     
@@ -326,17 +356,19 @@ struct TestRenderer : Renderer {
     }
 }
 
-//Protocol - Extension - Can't add function declaration to a protocol!!!
-//should add implementation
-//of a method
-//So I create a new protocol
-protocol DrawableCrusty {
-    func draw(renderer: Renderer)
+extension TestRenderer {
+    func circleAt(center: CGPoint, radius: CGFloat) {
+        print("circleAt(\(center), \(radius))")
+    }
+    
+    func rectangleAt(r: CGRect) {
+        print("rectangleAt(\(r))")
+    }
 }
 
 //Struc - Protocol - implementation - Adopting a Protocol
 //value type
-struct Polygon : DrawableCrusty {
+struct Polygon : Drawable {
     //value type
     var corners: [CGPoint] = []
     
@@ -348,19 +380,9 @@ struct Polygon : DrawableCrusty {
     }
 }
 
-//Struct - Protocol - Extension
-extension Circle : DrawableCrusty {
-    func draw(renderer: Renderer) {
-        renderer.arcAt(center: CGPoint(x: center.x, y: center.y),
-                       radius: CGFloat(radius),
-                       startAngle: 0.0,
-                       endAngle: 2 *  CGFloat.pi )
-    }
-}
-
 //Struct - value type
-struct Diagram : DrawableCrusty {
-    var elements: [DrawableCrusty] = []
+struct Diagram : Drawable {
+    var elements: [Drawable] = []
     
     func draw(renderer: Renderer) {
         for f in elements {
@@ -368,7 +390,7 @@ struct Diagram : DrawableCrusty {
         }
     }
     
-    mutating func add(other: DrawableCrusty) {
+    mutating func add(other: Drawable) {
         elements.append(other)
     }
 }
