@@ -147,8 +147,8 @@ final class SVGContext : DrawingContext {
     private var commands: [String] = []
     
     //Context size
-    var width = 300
-    var height = 200
+    var width = 0
+    var height = 0
     
     // 1 conform to the DrawingContext protocol
     func draw(circle: Circle) {
@@ -172,7 +172,13 @@ final class SVGContext : DrawingContext {
     
     //Getter
     var htmlString: String {
-        return "<!DOCTYPE html><html><body>" + svgString + "</body></html>"
+        return "<!DOCTYPE html>" +
+                    "<head>" +
+                        "<style>body { background-color: #555555; }</style>" +
+                    "</head>" +
+                    "<html>" +
+                        "<body>" + svgString + "</body>" +
+                    "</html>"
     }
 }
 
@@ -434,6 +440,8 @@ class CoreGraphicsDiagramView : UIView {
 
 let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
 webView.loadHTMLString(htmlString, baseURL: nil)
+//webView.backgroundColor = UIColor.red
+//this backgroundColor did not appear because the html takes precedence 
 //PlaygroundPage.current.liveView = view
 
 let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
