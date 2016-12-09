@@ -109,6 +109,7 @@ protocol Renderer {
     /// protocol extension, so conforming types need not supply their own.
     func circleAt(center: CGPoint, radius: CGFloat)
     func draw(circle: Circle)
+    func draw(rectangle: Rectangle)
 }
 
 extension Renderer {
@@ -149,6 +150,10 @@ extension Renderer {
         circleAt(center: CGPoint(x: CGFloat(circle.center.x),y: CGFloat(circle.center.y)),
                  radius: CGFloat(circle.radius))
     }
+    
+    func draw(rectangle: Rectangle) {
+    
+    }
 }
 
 struct TestRenderer : Renderer {
@@ -173,7 +178,10 @@ extension TestRenderer {
 
 extension TestRenderer {
     func draw(circle: Circle) {
-        print("draw(circle: Circle) circle.center: (\(circle.center), circle.radius: \(circle.radius))")
+        print("draw(circle: Circle) circle.center: \(circle.center), circle.radius: \(circle.radius)")
+    }
+    func draw(rectangle: Rectangle) {
+        print("draw(rectangle: Rectangle) rectangle.size: \(rectangle.size), rectangle.area: \(rectangle.area)")
     }
 }
 
@@ -214,8 +222,8 @@ struct Rectangle : Drawable {
     var origin = (x: 75.0, y: 50.0)
     var size = (width: 100.0, height: 100.0)
     
-    func draw(renderer r: Renderer) {
-        r.rectangleAt(r: bounds)
+    func draw(renderer: Renderer) {
+        renderer.draw(rectangle: self)
     }
 }
 
@@ -263,7 +271,7 @@ final class SVGRenderer : Renderer {
         var output = "<svg width='\(width)' height='\(height)'>" +
         "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
         for command in commands {
-            print(command)
+//            print(command)
             output += command
         }
         output += "</svg>"
@@ -503,19 +511,19 @@ class CoreGraphicsDiagramView : UIView {
 //}
 
 
-//http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
-let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
-//loadHTMLString is the renderer for SVGRenderer! 
-webView.loadHTMLString(htmlString, baseURL: nil)
-////webView.backgroundColor = UIColor.red
-////this backgroundColor did not appear because the html takes precedence
-////PlaygroundPage.current.liveView = view
+////http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
+//let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
+////loadHTMLString is the renderer for SVGRenderer! 
+//webView.loadHTMLString(htmlString, baseURL: nil)
+//////webView.backgroundColor = UIColor.red
+//////this backgroundColor did not appear because the html takes precedence
+//////PlaygroundPage.current.liveView = view
+////
+//let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+//diagramView.draw = { diagram.draw(renderer: $0) }
+//diagramView.addSubview(webView)
+//diagramView.setNeedsDisplay()
+//PlaygroundPage.current.liveView = diagramView
+//////showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
 //
-let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
-diagramView.draw = { diagram.draw(renderer: $0) }
-diagramView.addSubview(webView)
-diagramView.setNeedsDisplay()
-PlaygroundPage.current.liveView = diagramView
-////showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
-
-
+//
