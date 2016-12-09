@@ -7,6 +7,8 @@
 import Foundation
 import WebKit
 import PlaygroundSupport
+import UIKit
+import CoreGraphics
 
 
 ///////////////////////////////////////////////////////
@@ -116,8 +118,8 @@ struct Circle : Drawable {
     var strokeWidth = 5
     var strokeColor = CSSColor.named(.red)
     var fillColor = CSSColor.named(.yellow)
-    var center = (x: 65.0, y: 65.0)
-    var radius = 60.0
+    var center = (x: 125.0, y: 100.0)
+    var radius = 50.0
     
     // Implementing the Drawable protocol.
     func draw(with context: DrawingContext) {
@@ -130,8 +132,8 @@ struct Rectangle : Drawable {
     var strokeWidth = 5
     var strokeColor = CSSColor.named(.teal)
     var fillColor = CSSColor.named(.aqua)
-    var origin = (x: 190.0, y: 10.0)
-    var size = (width: 100.0, height: 130.0)
+    var origin = (x: 75.0, y: 50.0)
+    var size = (width: 100.0, height: 100.0)
     
     func draw(with context: DrawingContext) {
         //defer the draw work to the DrawingContext
@@ -145,8 +147,8 @@ final class SVGContext : DrawingContext {
     private var commands: [String] = []
     
     //Context size
-    var width = 250
-    var height = 250
+    var width = 0
+    var height = 0
     
     // 1 conform to the DrawingContext protocol
     func draw(circle: Circle) {
@@ -160,7 +162,8 @@ final class SVGContext : DrawingContext {
     
     //Getter
     var svgString: String {
-        var output = "<svg width='\(width)' height='\(height)'>"
+        var output = "<svg width='\(width)' height='\(height)'>" +
+                        "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
         for command in commands {
             output += command
         }
@@ -170,7 +173,13 @@ final class SVGContext : DrawingContext {
     
     //Getter
     var htmlString: String {
-        return "<!DOCTYPE html><html><body>" + svgString + "</body></html>"
+        return "<!DOCTYPE html>" +
+                    "<head>" +
+                        "<style>body { background-color: #555555; }</style>" +
+                    "</head>" +
+                    "<html>" +
+                        "<body>" + svgString + "</body>" +
+                    "</html>"
     }
 }
 
@@ -181,8 +190,8 @@ struct SVGDocument {
     //- Creates an SVGContext and returns the htmlString from the context.
     var htmlString: String {
         let context = SVGContext()
-        context.width = 300
-        context.height = 300 
+        context.width = 500
+        context.height = 500
         for drawable in drawables {
             drawable.draw(with: context)
         }
@@ -257,19 +266,28 @@ extension Circle: ClosedShape {
 //C.S - Protocol - retroactively adopting the protocol
 extension Rectangle: ClosedShape {}
 
-let circle = Circle()
+var circle = Circle()
 print("circle diameter: \(circle.diameter)")
 print("circle area: \(circle.area)")
 print("circle perimeter: \(circle.perimeter)")
 
-let rectangle = Rectangle()
+var rectangle = Rectangle()
 
 //Function - Protocol - func adopting ClosedShape protocol
 func totalPerimeter(shapes: [ClosedShape]) -> Double {
     //it uses reduce to calculate the sum of perimeters.
     return shapes.reduce(0) { $0 + $1.perimeter }
 }
+
+//---------------------------------------------------------------------------------
+let radius: Double = 93.75
+let rectangleSize = (width: radius * 4 , height: radius * 4)
+
+circle.radius = radius
+circle.center = (x: 187.5, y: 100)
+rectangle.size = rectangleSize
 totalPerimeter(shapes: [circle, rectangle])
+//---------------------------------------------------------------------------------
 
 ///////////////////////////////////////////////////////
 //Drawing the SVG
@@ -282,263 +300,26 @@ document.append(circle)
 let htmlString = document.htmlString
 print(htmlString)
 
-let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
-view.loadHTMLString(htmlString, baseURL: nil)
-PlaygroundPage.current.liveView = view
+//let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
+//view.loadHTMLString(htmlString, baseURL: nil)
+//PlaygroundPage.current.liveView = view
 
-
-
-////////////////////////////////////////////////////////////////////////
-//Reference(shared) vs Value types(unique, non-shared)
-//https://www.raywenderlich.com/112027/reference-value-types-in-swift-part-1
-//Goal - understand when should I prefer one over the other. 
-////////////////////////////////////////////////////////////////////////
-
-
-//Reference type - let
-class Dog {
-    var wasFed = false
-}
-
-let dog = Dog()
-let puppy = Dog()
-
-//Error - reference is constant, can't be changed
-//dog = puppy
-
-//Value types - Int to understand value types 
-let a = 42
-let b = a
-
-//Error - value can't be mutated
-//b += 1
-
-let c = 85
-//Error - can copy another value, similar to Reference when trying to assign another obj
-//b = c
-
-////////////////////////////////////
-//which to use and when
-////////////////////////////////////
-//Classes - Cocoa APIS require NSObject for compatibility with Objective-C
-
-////////////////////////////////////
-//Value types - When to Use them. 
-//1 - Comparing
-//-instance data with == makes sense
-
-
-struct Point: CustomStringConvertible {
-    var x: Float
-    var y: Float
-    
-    var description: String {
-        return "{x: \(x), y: \(y)}"
-    }
-}
-
-//Data - same internal values
-//Hardware - different memory location
-let point1 = Point(x: 2, y: 3)
-let point2 = Point(x: 2, y: 3)
-
-//let hola = "hola"
-//NSLog("%p", hola.core._baseAddress)
-
-//print("\(unsafeAddressOf(point1 as AnyObject))")
-//Value Types - Protocol - Conform The Equatable protocol
-//- good practice for all value types
-//- one function that must be implemented globally in order to compare two instances
-// == operator 
-
-extension Point: Equatable {
-    static func ==(lhs: Point, rhs: Point) -> Bool {
-        return lhs.x == rhs.x && lhs.y == rhs.y
-    }
-}
-
-print(point1 == point2)
-
-////////////////////////////////////
-//2 - Copies should have independent state
-//What would happen if you altered the centerpoint of one of the shapes?
-
-struct Shape {
-    var center: Point
-}
-
-let initialPoint = Point(x: 0, y: 0)
-var circle2 = Shape(center: initialPoint)
-var square  = Shape(center: initialPoint)
-
-circle2.center.x = 10
-//Each Shape needs its own copy of a Point so you can maintain their state independent of each other.
-//Could you imagine the chaos of all shapes sharing the same copy of a center Point? :]
-print(circle2.center)
-print(square.center)
-
-////////////////////////////////////
-//3 - The data will be used in code across multiple threads
-//Will multiple threads access this data?
-//If threads can uniquely own the data, using value types makes the whole point moot since each owner of the data holds a unique copy rather than a shared reference.
-
-
-
-////////////////////////////////////////////////////////////////////////
-//Reference types - When to Use them.
-////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////
-//1 Comparing instance identity with === makes sense
-//Analogy $20 bill exchange vs Magna Carta exchange for falsification 
-//not the value/data but identity 
-
-
-////////////////////////////////////
-//2 Synchronize - You want ot create a shared, mutable state
-class Account {
-    var balance = 0.0
-}
-
-class Client {
-    let account: Account
-    init(_ account: Account) {
-        self.account = account
-    }
-}
-let account = Account()
-
-let person1 = Client(account)
-let person2 = Client(account)
-
-person2.account.balance += 100.0
-
-person1.account.balance    // 100
-person2.account.balance    // 100
-
-////////////////////////////////////////////////////////////////////////
-//part 2/2 
-////////////////////////////////////////////////////////////////////////
-//Mixing Value and reference types
-
-//Complications related to this mixing
-//Common - References containing value types
-
-//Person - Class
-//-identify - 2 case - uniqueness matters
-//-address - structured will be stored - 1 equality matters
-
-//Struct - Value type
-struct Address {
-    //String is also a value type
-    var streetAddress: String
-    var city: String
-    var state: String
-    var postalCode: String
-}
-
-//class Address {
-//    //String is also a value type
-//    var streetAddress: String
-//    var city: String
-//    var state: String
-//    var postalCode: String
-//    
-//    init(streetAddress: String, city: String, state: String, postalCode: String) {
-//        self.streetAddress = streetAddress
-//        self.city = city
-//        self.state = state
-//        self.postalCode = postalCode
-//    }
-//}
-
-class Person {          // Reference type
-    var name: String      // Value type
-    var address: Address  // Value type
-    
-    init(name: String, address: Address) {
-        self.name = name
-        self.address = address
-    }
-}
-
-// 1
-let kingsLanding = Address(streetAddress: "1 King Way", city: "Kings Landing", state: "Westeros", postalCode: "12345")
-let madKing = Person(name: "Aerys", address: kingsLanding)
-let kingSlayer = Person(name: "Jaime", address: kingsLanding)
-
-// 2 - chagen this property should only affect this instance.
-kingSlayer.address.streetAddress = "1 King Way Apt. 1"
-
-// 3 - uniqueness
-madKing.address.streetAddress  // 1 King Way
-kingSlayer.address.streetAddress // 1 King Way Apt. 1
-
-struct Bill {
-    let amount: Float
-    let billedTo: Person
-}
-
-
-////////////////////////////////////
-//Nested Types - Struct with parameters of reference type
-////////////////////////////////////
-struct House {
-    var thermostat = Thermostat()
-    var oven = Oven()
-}
-
-class Temperature {
-    var fahrenheit = Double()
-    var celsius : Double {
-        return (self.fahrenheit - 32) * 5.0/9.0
-    }
-}
-
-struct Thermostat {
-    var temperature = Temperature()
-}
-
-struct Oven {
-    var temperature = Temperature()
-}
-
-var home = House()
-var temp = Temperature()
-temp.fahrenheit = 75
-home.thermostat.temperature = temp
-temp.fahrenheit = 425
-home.oven.temperature = temp
-
-home.thermostat.temperature.fahrenheit
-home.oven.temperature.fahrenheit
-
-home.thermostat.temperature.celsius
-home.oven.temperature.celsius
-
-
-//David6p2
-
-let array = [1,2,3,4,5]
-let suma = {(x:Int, y:Int) in return (x + y)}
-let sum = array.reduce(0,suma)
-print(sum)
 
 ////////////////////////////////////////////////////////////////////////
 //WWDC 2015 408
 ////////////////////////////////////////////////////////////////////////
 protocol Renderer {
-    func moveTo(p: CGPoint)
+    func moveTo(position p: CGPoint)
     
-    func lineTo(p: CGPoint)
+    func lineTo(position p: CGPoint)
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
 }
 
 struct TestRenderer : Renderer {
-    func moveTo(p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
+    func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
     
-    func lineTo(p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
+    func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
     print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
@@ -560,9 +341,9 @@ struct Polygon : DrawableCrusty {
     var corners: [CGPoint] = []
     
     func draw(renderer: Renderer) {
-        renderer.moveTo(p: corners.last!)
+        renderer.moveTo(position: corners.last!)
         for point in corners {
-            renderer.lineTo(p: point)
+            renderer.lineTo(position: point)
         }
     }
 }
@@ -615,11 +396,67 @@ diagram.draw(renderer: TestRenderer())
 //extend CGContext to make it a Renderer 
 //not possible if Renderer were a base class rather that a protocol. 
 extension CGContext : Renderer {
-    func moveTo(p: CGPoint) { }
+    func moveTo(position p: CGPoint) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.move(to: p)
+    }
     
-    func lineTo(p: CGPoint) { }
+    func lineTo(position p: CGPoint) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.addLine(to: p)
+    }
     
-    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {}
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        let path = CGMutablePath()
+        path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        self.addPath(path)
+    }
 }
+
+let drawingArea = CGRect(x: 100.0, y: 0.0, width: 375.0, height: 667.0)
+
+/// `CoreGraphicsDiagramView` is a `UIView` that draws itself by calling a
+/// user-supplied function to generate paths in a `CGContext`, then strokes
+/// the context's current path, creating lines in a pleasing shade of blue.
+class CoreGraphicsDiagramView : UIView {
+    override func draw(_ rect: CGRect) {
+        let context = UIGraphicsGetCurrentContext()!
+        context.saveGState()
+        draw(context)
+        let red = CGFloat(0.222)
+        let green = CGFloat(0.617)
+        let blue = CGFloat(0.976)
+        let lightBlue = UIColor(red: red, green: green, blue: blue, alpha: 1.0).cgColor
+        context.setStrokeColor(lightBlue)
+        context.setLineWidth(3)
+        context.strokePath()
+        context.restoreGState()
+    }
+    
+    var draw: (CGContext)->() = { _ in () }
+}
+
+/// Shows a `UIView` in the current playground that draws itself by invoking
+/// `draw` on a `CGContext`, then stroking the context's current path in a
+/// pleasing light blue.
+//public func showCoreGraphicsDiagram(_ title: String, draw: @escaping (CGContext)->()) {
+//    let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+//    diagramView.draw = draw
+//    diagramView.setNeedsDisplay()
+//    PlaygroundPage.current.liveView = diagramView
+//}
+
+let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
+webView.loadHTMLString(htmlString, baseURL: nil)
+//webView.backgroundColor = UIColor.red
+//this backgroundColor did not appear because the html takes precedence 
+//PlaygroundPage.current.liveView = view
+
+let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+diagramView.draw = { diagram.draw(renderer: $0) }
+diagramView.addSubview(webView)
+diagramView.setNeedsDisplay()
+PlaygroundPage.current.liveView = diagramView
+//showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
 
 
