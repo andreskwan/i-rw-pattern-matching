@@ -14,7 +14,7 @@ import CoreGraphics
 ///////////////////////////////////////////////////////
 //Enums
 ///////////////////////////////////////////////////////
-//amazing for well known list of things that we want to represent 
+//amazing for well known list of things that we want to represent
 //no so good for things that could be extended or changed in time.
 //Why? Because new enum cases cannot be added later in an extension.
 
@@ -46,8 +46,8 @@ CSSColor.ColorName.black
 
 //Enum - Protocols
 extension CSSColor: CustomStringConvertible {
-//Protocol implementation
-//You’re required to implement a getter for a description string property.
+    //Protocol implementation
+    //You’re required to implement a getter for a description string property.
     var description: String {
         switch self {
         case .named(let colorName):
@@ -62,7 +62,7 @@ let fillRGB = CSSColor.rgb(100, 100, 100)
 
 //print(fillRGB)
 
-//Enum - Custom initializer 
+//Enum - Custom initializer
 //for grayscale values.
 extension CSSColor {
     init(gray: UInt8) {
@@ -98,7 +98,7 @@ Math.phi
 //Protocol - I want my shapes to be drawable
 protocol Drawable {
     //defines what it means to be Drawable
-    //no drawing technology is specified 
+    //no drawing technology is specified
     //so I could implement it in terms of anything!
     //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
     func draw(with context: DrawingContext)
@@ -163,7 +163,7 @@ final class SVGContext : DrawingContext {
     //Getter
     var svgString: String {
         var output = "<svg width='\(width)' height='\(height)'>" +
-                        "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
+        "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
         for command in commands {
             output += command
         }
@@ -174,12 +174,12 @@ final class SVGContext : DrawingContext {
     //Getter
     var htmlString: String {
         return "<!DOCTYPE html>" +
-                    "<head>" +
-                        "<style>body { background-color: #555555; }</style>" +
-                    "</head>" +
-                    "<html>" +
-                        "<body>" + svgString + "</body>" +
-                    "</html>"
+            "<head>" +
+            "<style>body { background-color: #555555; }</style>" +
+            "</head>" +
+            "<html>" +
+            "<body>" + svgString + "</body>" +
+        "</html>"
     }
 }
 
@@ -206,7 +206,7 @@ struct SVGDocument {
 ///////////////////////////////////////////////////////
 //Classes
 ///////////////////////////////////////////////////////
-//let me define 
+//let me define
 //- base classes
 //- derived classes
 
@@ -232,7 +232,7 @@ extension Circle {
 }
 
 //Classes/Structs - Retroactive Modeling and Type Constraining
-//retroactive modeling. 
+//retroactive modeling.
 //- It lets you extend behavior of a model type even if you don’t have the source code for it.
 
 //Goal - create a protocol for clased shapes
@@ -322,7 +322,7 @@ struct TestRenderer : Renderer {
     func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
     
     func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-    print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
+        print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
     }
 }
 
@@ -334,7 +334,7 @@ protocol DrawableCrusty {
     func draw(renderer: Renderer)
 }
 
-//Struc - Protocol - implementation - Adopting a Protocol 
+//Struc - Protocol - implementation - Adopting a Protocol
 //value type
 struct Polygon : DrawableCrusty {
     //value type
@@ -396,8 +396,8 @@ diagram.draw(renderer: TestRenderer())
 //Rewrite render to use CoreGraphics 22:47
 
 //Retroactive Modeling
-//extend CGContext to make it a Renderer 
-//not possible if Renderer were a base class rather that a protocol. 
+//extend CGContext to make it a Renderer
+//not possible if Renderer were a base class rather that a protocol.
 extension CGContext : Renderer {
     func moveTo(position p: CGPoint) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
@@ -454,7 +454,7 @@ class CoreGraphicsDiagramView : UIView {
 let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
 webView.loadHTMLString(htmlString, baseURL: nil)
 //webView.backgroundColor = UIColor.red
-//this backgroundColor did not appear because the html takes precedence 
+//this backgroundColor did not appear because the html takes precedence
 //PlaygroundPage.current.liveView = view
 
 let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
