@@ -184,7 +184,7 @@ struct SVGDocument {
     var htmlString: String {
         let context = SVGContext()
         context.width = 300
-        context.height = 200
+        context.height = 300
         for drawable in drawables {
             drawable.draw(with: context)
         }
@@ -259,19 +259,28 @@ extension Circle: ClosedShape {
 //C.S - Protocol - retroactively adopting the protocol
 extension Rectangle: ClosedShape {}
 
-let circle = Circle()
+var circle = Circle()
 print("circle diameter: \(circle.diameter)")
 print("circle area: \(circle.area)")
 print("circle perimeter: \(circle.perimeter)")
 
-let rectangle = Rectangle()
+var rectangle = Rectangle()
 
 //Function - Protocol - func adopting ClosedShape protocol
 func totalPerimeter(shapes: [ClosedShape]) -> Double {
     //it uses reduce to calculate the sum of perimeters.
     return shapes.reduce(0) { $0 + $1.perimeter }
 }
+
+//---------------------------------------------------------------------------------
+let radius: Double = 93.75
+let rectangleSize = (width: radius * 2 , height: radius * 2)
+
+circle.radius = radius
+circle.center = (x: 187.5, y: 100)
+rectangle.size = rectangleSize
 totalPerimeter(shapes: [circle, rectangle])
+//---------------------------------------------------------------------------------
 
 ///////////////////////////////////////////////////////
 //Drawing the SVG
@@ -416,17 +425,22 @@ class CoreGraphicsDiagramView : UIView {
 /// Shows a `UIView` in the current playground that draws itself by invoking
 /// `draw` on a `CGContext`, then stroking the context's current path in a
 /// pleasing light blue.
-public func showCoreGraphicsDiagram(_ title: String, draw: @escaping (CGContext)->()) {
-    let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
-    diagramView.draw = draw
-    diagramView.setNeedsDisplay()
-    PlaygroundPage.current.liveView = diagramView
-}
+//public func showCoreGraphicsDiagram(_ title: String, draw: @escaping (CGContext)->()) {
+//    let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+//    diagramView.draw = draw
+//    diagramView.setNeedsDisplay()
+//    PlaygroundPage.current.liveView = diagramView
+//}
 
-//let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
-//view.loadHTMLString(htmlString, baseURL: nil)
+let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
+webView.loadHTMLString(htmlString, baseURL: nil)
 //PlaygroundPage.current.liveView = view
 
-showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
+let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+diagramView.draw = { diagram.draw(renderer: $0) }
+diagramView.addSubview(webView)
+diagramView.setNeedsDisplay()
+PlaygroundPage.current.liveView = diagramView
+//showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
 
 
