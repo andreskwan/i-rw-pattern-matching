@@ -586,6 +586,10 @@ struct Diagram : DrawableCrusty {
             f.draw(renderer: renderer)
         }
     }
+    
+    mutating func add(other: DrawableCrusty) {
+        elements.append(other)
+    }
 }
 
 //Struct - extension - initializer
@@ -607,6 +611,9 @@ diagram.draw(renderer: TestRenderer())
 
 //Rewrite render to use CoreGraphics 22:47
 
+//Retroactive Modeling
+//extend CGContext to make it a Renderer 
+//not possible if Renderer were a base class rather that a protocol. 
 extension CGContext : Renderer {
     func moveTo(p: CGPoint) { }
     
