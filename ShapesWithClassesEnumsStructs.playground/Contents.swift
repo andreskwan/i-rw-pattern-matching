@@ -162,7 +162,8 @@ final class SVGContext : DrawingContext {
     
     //Getter
     var svgString: String {
-        var output = "<svg width='\(width)' height='\(height)'>"
+        var output = "<svg width='\(width)' height='\(height)'>" +
+                        "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
         for command in commands {
             output += command
         }
@@ -189,8 +190,8 @@ struct SVGDocument {
     //- Creates an SVGContext and returns the htmlString from the context.
     var htmlString: String {
         let context = SVGContext()
-        context.width = 300
-        context.height = 300
+        context.width = 500
+        context.height = 500
         for drawable in drawables {
             drawable.draw(with: context)
         }
@@ -280,7 +281,7 @@ func totalPerimeter(shapes: [ClosedShape]) -> Double {
 
 //---------------------------------------------------------------------------------
 let radius: Double = 93.75
-let rectangleSize = (width: radius * 2 , height: radius * 2)
+let rectangleSize = (width: radius * 4 , height: radius * 4)
 
 circle.radius = radius
 circle.center = (x: 187.5, y: 100)
