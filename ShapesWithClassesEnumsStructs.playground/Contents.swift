@@ -165,6 +165,7 @@ final class SVGContext : DrawingContext {
         var output = "<svg width='\(width)' height='\(height)'>" +
                         "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
         for command in commands {
+            print(command)
             output += command
         }
         output += "</svg>"
