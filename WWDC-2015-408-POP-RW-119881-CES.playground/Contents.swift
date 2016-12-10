@@ -10,11 +10,12 @@ import PlaygroundSupport
 import UIKit
 import CoreGraphics
 
+let twoPi = CGFloat(M_PI * 2)
 
 ///////////////////////////////////////////////////////
 //Enums
 ///////////////////////////////////////////////////////
-//amazing for well known list of things that we want to represent 
+//amazing for well known list of things that we want to represent
 //no so good for things that could be extended or changed in time.
 //Why? Because new enum cases cannot be added later in an extension.
 
@@ -46,8 +47,8 @@ CSSColor.ColorName.black
 
 //Enum - Protocols
 extension CSSColor: CustomStringConvertible {
-//Protocol implementation
-//You’re required to implement a getter for a description string property.
+    //Protocol implementation
+    //You’re required to implement a getter for a description string property.
     var description: String {
         switch self {
         case .named(let colorName):
@@ -62,7 +63,7 @@ let fillRGB = CSSColor.rgb(100, 100, 100)
 
 //print(fillRGB)
 
-//Enum - Custom initializer 
+//Enum - Custom initializer
 //for grayscale values.
 extension CSSColor {
     init(gray: UInt8) {
@@ -95,22 +96,103 @@ Math.phi
 
 //Goal - allow users to create their own custom shpes within the SVG
 
-//Protocol - I want my shapes to be drawable
-protocol Drawable {
-    //defines what it means to be Drawable
-    //no drawing technology is specified 
-    //so I could implement it in terms of anything!
-    //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
-    func draw(with context: DrawingContext)
-}
-
-//Protocol - I need a context to draw my shapes
-protocol DrawingContext {
-    //Knows how to draw pure geometric types(graphycal primitives)
+protocol Renderer {
+    func moveTo(position p: CGPoint)
+    
+    func lineTo(position p: CGPoint)
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
+    
+    /// Draws a complete circle with the given center and radius.
+    ///
+    /// Note: a default implementation of `circleAt` is provided by a
+    /// protocol extension, so conforming types need not supply their own.
+    func circleAt(center: CGPoint, radius: CGFloat)
     func draw(circle: Circle)
     func draw(rectangle: Rectangle)
 }
 
+extension Renderer {
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        
+    }
+    
+    func lineTo(position p: CGPoint) {
+        
+    }
+    
+    func moveTo(position p: CGPoint) {
+        
+    }
+    // types conforming to `Renderer` can provide a more-specific
+    // `circleAt` that will always be used in lieu of this one.
+    func circleAt(center: CGPoint, radius: CGFloat) {
+        arcAt(center: center, radius: radius, startAngle: 0.0, endAngle: twoPi)
+    }
+    
+    func circleAt(center: (x: Float, y: Float), radius: Float) {
+//        arcAt(center: center, radius: radius, startAngle: 0.0, endAngle: twoPi)
+    }
+    // `rectangleAt` is not a protocol requirement, so it is
+    // dispatched statically.  In a context where the concrete type
+    // conforming to `Renderer` is not known at compile-time, this
+    // `rectangleAt` will be used in lieu of any implementation
+    // provided by the conforming type.
+    func rectangleAt(r: CGRect) {
+        moveTo(position: CGPoint(x: r.minX, y: r.minY))
+        lineTo(position: CGPoint(x: r.minX, y: r.maxY))
+        lineTo(position: CGPoint(x: r.maxX, y: r.maxY))
+        lineTo(position: CGPoint(x: r.maxX, y: r.minY))
+        lineTo(position: CGPoint(x: r.minX, y: r.minY))
+    }
+    
+    func draw(circle: Circle) {
+        circleAt(center: CGPoint(x: CGFloat(circle.center.x),y: CGFloat(circle.center.y)),
+                 radius: CGFloat(circle.radius))
+    }
+    
+    func draw(rectangle: Rectangle) {
+    
+    }
+}
+
+struct TestRenderer : Renderer {
+    func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
+    
+    func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
+    }
+}
+
+extension TestRenderer {
+    func circleAt(center: CGPoint, radius: CGFloat) {
+        print("circleAt(\(center), \(radius))")
+    }
+    
+    func rectangleAt(r: CGRect) {
+        print("rectangleAt(\(r))")
+    }
+}
+
+extension TestRenderer {
+    func draw(circle: Circle) {
+        print("draw(circle: Circle) circle.center: \(circle.center), circle.radius: \(circle.radius)")
+    }
+    func draw(rectangle: Rectangle) {
+        print("draw(rectangle: Rectangle) rectangle.size: \(rectangle.size), rectangle.area: \(rectangle.area)")
+    }
+}
+
+//Protocol - I want my shapes to be drawable
+//defines what it means to be Drawable
+//no drawing technology is specified
+//so I could implement it in terms of anything!
+//SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
+protocol Drawable {
+    func draw(renderer: Renderer)
+}
 
 //Struc - Adopting a Protocol - implementation
 struct Circle : Drawable {
@@ -122,9 +204,14 @@ struct Circle : Drawable {
     var radius = 50.0
     
     // Implementing the Drawable protocol.
-    func draw(with context: DrawingContext) {
-        //defer the draw work to the DrawingContext
-        context.draw(circle: self)
+    func draw(renderer: Renderer) {
+        //Commente because what I need is to draw a circle and circle use arcAt 
+        //
+        //        renderer.arcAt(center: CGPoint(x: center.x, y: center.y),
+        //                       radius: CGFloat(radius),
+        //                       startAngle: 0.0,
+        //                       endAngle: 2 *  CGFloat.pi )
+        renderer.draw(circle: self)
     }
 }
 
@@ -135,27 +222,46 @@ struct Rectangle : Drawable {
     var origin = (x: 75.0, y: 50.0)
     var size = (width: 100.0, height: 100.0)
     
-    func draw(with context: DrawingContext) {
-        //defer the draw work to the DrawingContext
-        context.draw(rectangle: self)
+    func draw(renderer: Renderer) {
+        renderer.draw(rectangle: self)
     }
 }
 
-//Class - Adopting the DrawingContext protocol
-final class SVGContext : DrawingContext {
+extension Rectangle {
+    var bounds: CGRect {
+        return CGRect(x: origin.x, y: origin.y , width: size.width , height: size.height)
+    }
+}
+
+//Struc - Protocol - implementation - Adopting a Protocol
+//value type
+struct Polygon : Drawable {
+    //value type
+    var corners: [CGPoint] = []
     
+    func draw(renderer: Renderer) {
+        renderer.moveTo(position: corners.last!)
+        for point in corners {
+            renderer.lineTo(position: point)
+        }
+    }
+}
+
+//Class - Adopting the Renderer protocol
+final class SVGRenderer : Renderer {
+
     private var commands: [String] = []
     
     //Context size
     var width = 0
     var height = 0
     
-    // 1 conform to the DrawingContext protocol
+    // 1 conform to the Renderer protocol
     func draw(circle: Circle) {
         commands.append("<circle cx='\(circle.center.x)' cy='\(circle.center.y)\' r='\(circle.radius)' stroke='\(circle.strokeColor)' fill='\(circle.fillColor)' stroke-width='\(circle.strokeWidth)'  />")
     }
     
-    // 2 conform to the DrawingContext protocol
+    // 2 conform to the Renderer protocol
     func draw(rectangle: Rectangle) {
         commands.append("<rect x='\(rectangle.origin.x)' y='\(rectangle.origin.y)' width='\(rectangle.size.width)' height='\(rectangle.size.height)' stroke='\(rectangle.strokeColor)' fill='\(rectangle.fillColor)' stroke-width='\(rectangle.strokeWidth)' />")
     }
@@ -163,9 +269,9 @@ final class SVGContext : DrawingContext {
     //Getter
     var svgString: String {
         var output = "<svg width='\(width)' height='\(height)'>" +
-                        "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
+        "<rect width='\(width)' height='\(height)' style=\"fill:rgb(25,25,25)\"/>"
         for command in commands {
-            print(command)
+//            print(command)
             output += command
         }
         output += "</svg>"
@@ -174,15 +280,14 @@ final class SVGContext : DrawingContext {
     
     //Getter
     var htmlString: String {
-        //        http://www.w3schools.com/html/html5_svg.asp
-        //        http://www.w3schools.com/html/tryit.asp?filename=tryhtml_svg_rect
+//        print(svgString)
         return "<!DOCTYPE html>" +
-                    "<head>" +
-                        "<style>body { background-color: #555555; }</style>" +
-                    "</head>" +
-                    "<html>" +
-                        "<body>" + svgString + "</body>" +
-                    "</html>"
+            "<head>" +
+            "<style>body { background-color: #555555; }</style>" +
+            "</head>" +
+            "<html>" +
+            "<body>" + svgString + "</body>" +
+        "</html>"
     }
 }
 
@@ -190,15 +295,22 @@ struct SVGDocument {
     var drawables: [Drawable] = []
     
     //Getters - Computed property
-    //- Creates an SVGContext and returns the htmlString from the context.
+    //- Instantiate an SVGRenderer and returns the htmlString from the context.
     var htmlString: String {
-        let context = SVGContext()
+        let context = SVGRenderer()
         context.width = 960
         context.height = 500
         for drawable in drawables {
-            drawable.draw(with: context)
+            drawable.draw(renderer: context)
         }
         return context.htmlString
+    }
+    
+    //this function is needed if I what to draw with a specific renderer
+    func draw(renderer: Renderer) {
+        for f in drawables {
+            f.draw(renderer: renderer)
+        }
     }
     
     mutating func append(_ drawable: Drawable) {
@@ -209,7 +321,7 @@ struct SVGDocument {
 ///////////////////////////////////////////////////////
 //Classes
 ///////////////////////////////////////////////////////
-//let me define 
+//let me define
 //- base classes
 //- derived classes
 
@@ -235,7 +347,7 @@ extension Circle {
 }
 
 //Classes/Structs - Retroactive Modeling and Type Constraining
-//retroactive modeling. 
+//retroactive modeling.
 //- It lets you extend behavior of a model type even if you don’t have the source code for it.
 
 //Goal - create a protocol for clased shapes
@@ -299,71 +411,16 @@ var document = SVGDocument()
 
 document.append(rectangle)
 document.append(circle)
+//testing the SVGRenderer
+document.draw(renderer: TestRenderer())
 
 let htmlString = document.htmlString
+//let svgString = document.svgString
 //print(htmlString)
 
-//let view = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
-//view.loadHTMLString(htmlString, baseURL: nil)
-//PlaygroundPage.current.liveView = view
-
-
-////////////////////////////////////////////////////////////////////////
-//WWDC 2015 408
-////////////////////////////////////////////////////////////////////////
-protocol Renderer {
-    func moveTo(position p: CGPoint)
-    
-    func lineTo(position p: CGPoint)
-    
-    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat)
-}
-
-struct TestRenderer : Renderer {
-    func moveTo(position p: CGPoint) { print("moveTo(\(p.x), \(p.y)")}
-    
-    func lineTo(position p: CGPoint) { print("lineTo(\(p.x), \(p.y)")}
-    
-    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
-    print("arcAt(\(center), radius: \(radius), startAngle: \(startAngle), endAngle: \(endAngle)")
-    }
-}
-
-//Protocol - Extension - Can't add function declaration to a protocol!!!
-//should add implementation
-//of a method
-//So I create a new protocol
-protocol DrawableCrusty {
-    func draw(renderer: Renderer)
-}
-
-//Struc - Protocol - implementation - Adopting a Protocol 
-//value type
-struct Polygon : DrawableCrusty {
-    //value type
-    var corners: [CGPoint] = []
-    
-    func draw(renderer: Renderer) {
-        renderer.moveTo(position: corners.last!)
-        for point in corners {
-            renderer.lineTo(position: point)
-        }
-    }
-}
-
-//Struct - Protocol - Extension
-extension Circle : DrawableCrusty {
-    func draw(renderer: Renderer) {
-        renderer.arcAt(center: CGPoint(x: center.x, y: center.y),
-                       radius: CGFloat(radius),
-                       startAngle: 0.0,
-                       endAngle: 2 *  CGFloat.pi )
-    }
-}
-
 //Struct - value type
-struct Diagram : DrawableCrusty {
-    var elements: [DrawableCrusty] = []
+struct Diagram : Drawable {
+    var elements: [Drawable] = []
     
     func draw(renderer: Renderer) {
         for f in elements {
@@ -371,7 +428,7 @@ struct Diagram : DrawableCrusty {
         }
     }
     
-    mutating func add(other: DrawableCrusty) {
+    mutating func append(other: Drawable) {
         elements.append(other)
     }
 }
@@ -392,15 +449,16 @@ var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
 var diagram = Diagram(elements: [circle408, triangle])
 
 //why does it works? bacause value type.
-var insideDiagram = diagram
-diagram.add(other: insideDiagram)
-diagram.draw(renderer: TestRenderer())
+//var insideDiagram = diagram
+//diagram.append(other: insideDiagram)
+//diagram.draw(renderer: TestRenderer())
+
 
 //Rewrite render to use CoreGraphics 22:47
 
 //Retroactive Modeling
-//extend CGContext to make it a Renderer 
-//not possible if Renderer were a base class rather that a protocol. 
+//extend CGContext to make it a Renderer
+//not possible if Renderer were a base class rather that a protocol.
 extension CGContext : Renderer {
     func moveTo(position p: CGPoint) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
@@ -442,7 +500,6 @@ class CoreGraphicsDiagramView : UIView {
     var draw: (CGContext)->() = { _ in () }
 }
 
-//https://github.com/alskipp/Swift-Diagram-Playgrounds/tree/master - helps me to solve the drawing with CG issue. 
 /// Shows a `UIView` in the current playground that draws itself by invoking
 /// `draw` on a `CGContext`, then stroking the context's current path in a
 /// pleasing light blue.
@@ -454,19 +511,19 @@ class CoreGraphicsDiagramView : UIView {
 //}
 
 
-//http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
-let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
-//webView.isOpaque = true
-webView.loadHTMLString(htmlString, baseURL: nil)
-//webView.backgroundColor = UIColor.red
-//this backgroundColor did not appear because the html takes precedence 
-//PlaygroundPage.current.liveView = view
-
-let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
-diagramView.draw = { diagram.draw(renderer: $0) }
-diagramView.addSubview(webView)
-diagramView.setNeedsDisplay()
-PlaygroundPage.current.liveView = diagramView
-//showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
-
-
+////http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
+//let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
+////loadHTMLString is the renderer for SVGRenderer! 
+//webView.loadHTMLString(htmlString, baseURL: nil)
+//////webView.backgroundColor = UIColor.red
+//////this backgroundColor did not appear because the html takes precedence
+//////PlaygroundPage.current.liveView = view
+////
+//let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+//diagramView.draw = { diagram.draw(renderer: $0) }
+//diagramView.addSubview(webView)
+//diagramView.setNeedsDisplay()
+//PlaygroundPage.current.liveView = diagramView
+//////showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
+//
+//
