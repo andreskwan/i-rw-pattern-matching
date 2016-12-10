@@ -176,6 +176,7 @@ extension TestRenderer {
     }
 }
 
+//SVG - testing
 extension TestRenderer {
     func draw(circle: Circle) {
         print("draw(circle: Circle) circle.center: \(circle.center), circle.radius: \(circle.radius)")
@@ -191,7 +192,23 @@ extension TestRenderer {
 //so I could implement it in terms of anything!
 //SVG, HTML5 canvas, CoreGraphics, OpenGL, Metal, etc.
 protocol Drawable {
+    var drawables: [Drawable] {set get}
     func draw(renderer: Renderer)
+    mutating func append(drawable: Drawable)
+}
+
+extension Drawable {
+    var drawables: [Drawable] {
+        get {
+            return drawables
+        }
+        set {
+            drawables = newValue
+        }
+    }
+    mutating func append(drawable: Drawable) {
+        drawables.append(drawable)
+    }
 }
 
 //Struc - Adopting a Protocol - implementation
@@ -291,30 +308,28 @@ final class SVGRenderer : Renderer {
     }
 }
 
-struct SVGDocument {
+struct SVGDiagram : Drawable {
     var drawables: [Drawable] = []
     
     //Getters - Computed property
     //- Instantiate an SVGRenderer and returns the htmlString from the context.
     var htmlString: String {
-        let context = SVGRenderer()
-        context.width = 960
-        context.height = 500
+        let svgRenderer = SVGRenderer()
+        svgRenderer.width = 960
+        svgRenderer.height = 500
         for drawable in drawables {
-            drawable.draw(renderer: context)
+            drawable.draw(renderer: svgRenderer)
         }
-        return context.htmlString
+        return svgRenderer.htmlFinalDoc
     }
     
     //this function is needed if I what to draw with a specific renderer
+    //TestRenderer - use it to test it 
+    //SVGRenderer - to
     func draw(renderer: Renderer) {
         for f in drawables {
             f.draw(renderer: renderer)
         }
-    }
-    
-    mutating func append(_ drawable: Drawable) {
-        drawables.append(drawable)
     }
 }
 
@@ -407,30 +422,30 @@ totalPerimeter(shapes: [circle, rectangle])
 ///////////////////////////////////////////////////////
 //Drawing the SVG
 ///////////////////////////////////////////////////////
-var document = SVGDocument()
+var svgDiagram = SVGDiagram()
 
-document.append(rectangle)
-document.append(circle)
+svgDiagram.append(drawable: rectangle)
+svgDiagram.append(drawable: circle)
 //testing the SVGRenderer
-document.draw(renderer: TestRenderer())
+svgDiagram.draw(renderer: TestRenderer())
 
-let htmlString = document.htmlString
+let htmlString = svgDiagram.htmlString
 //let svgString = document.svgString
 //print(htmlString)
 
 //Struct - value type
 struct Diagram : Drawable {
-    var elements: [Drawable] = []
+    var drawables: [Drawable] = []
     
     func draw(renderer: Renderer) {
-        for f in elements {
+        for f in drawables {
             f.draw(renderer: renderer)
         }
     }
     
-    mutating func append(other: Drawable) {
-        elements.append(other)
-    }
+//    mutating func append(other: Drawable) {
+//        elements.append(other)
+//    }
 }
 
 //Struct - extension - initializer
@@ -440,19 +455,6 @@ extension Circle {
         self.radius = length
     }
 }
-
-var circle408 = Circle(center: (187.5, 333.5), radius: 93.75)
-var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
-                                 CGPoint(x: 268.69, y: 286.625),
-                                 CGPoint(x: 106.31, y: 286.625)])
-
-var diagram = Diagram(elements: [circle408, triangle])
-
-//why does it works? bacause value type.
-//var insideDiagram = diagram
-//diagram.append(other: insideDiagram)
-//diagram.draw(renderer: TestRenderer())
-
 
 //Rewrite render to use CoreGraphics 22:47
 
@@ -476,8 +478,6 @@ extension CGContext : Renderer {
         self.addPath(path)
     }
 }
-
-let drawingArea = CGRect(x: 100.0, y: 0.0, width: 375.0, height: 667.0)
 
 /// `CoreGraphicsDiagramView` is a `UIView` that draws itself by calling a
 /// user-supplied function to generate paths in a `CGContext`, then strokes
@@ -510,20 +510,33 @@ class CoreGraphicsDiagramView : UIView {
 //    PlaygroundPage.current.liveView = diagramView
 //}
 
+var circle408 = Circle(center: (187.5, 333.5), radius: 93.75)
+var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
+                                 CGPoint(x: 268.69, y: 286.625),
+                                 CGPoint(x: 106.31, y: 286.625)])
 
-////http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
-//let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
-////loadHTMLString is the renderer for SVGRenderer! 
-//webView.loadHTMLString(htmlString, baseURL: nil)
-//////webView.backgroundColor = UIColor.red
-//////this backgroundColor did not appear because the html takes precedence
-//////PlaygroundPage.current.liveView = view
-////
-//let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
-//diagramView.draw = { diagram.draw(renderer: $0) }
-//diagramView.addSubview(webView)
-//diagramView.setNeedsDisplay()
-//PlaygroundPage.current.liveView = diagramView
-//////showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
-//
-//
+var diagram = Diagram(drawables: [circle408, triangle])
+
+//why does it works? bacause value type.
+var insideDiagram = diagram
+diagram.append(drawable: insideDiagram)
+diagram.draw(renderer: TestRenderer())
+
+//http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
+let svgDrawingArea = CGRect(x: 0.0, y: 0.0, width: 375.0, height: 200.0)
+let webView = WKWebView(frame: svgDrawingArea)
+//loadHTMLString is the renderer for SVGRenderer! 
+webView.loadHTMLString(htmlString, baseURL: nil)
+////webView.backgroundColor = UIColor.red
+////this backgroundColor did not appear because the html takes precedence
+////PlaygroundPage.current.liveView = view
+
+let drawingArea = CGRect(x: 100.0, y: 0.0, width: 375.0, height: 667.0)
+let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
+diagramView.draw = { diagram.draw(renderer: $0) }
+diagramView.addSubview(webView)
+diagramView.setNeedsDisplay()
+PlaygroundPage.current.liveView = diagramView
+////showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }
+
+
