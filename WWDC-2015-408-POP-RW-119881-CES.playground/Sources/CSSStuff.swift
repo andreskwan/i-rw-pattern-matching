@@ -18,13 +18,13 @@ import UIKit
 extension CSSColor {
     //CSS colors
     // Enum String as a RawRepresentable
-    enum ColorName: String {
+    public enum ColorName: String {
         case black, silver, gray, white, maroon, red, purple, fuchsia, green, lime, olive, yellow, navy, blue, teal, aqua
     }
 }
 
 //Enum - Associated Values
-enum CSSColor {
+public enum CSSColor {
     case named(ColorName)
     case rgb(UInt8, UInt8, UInt8)
 }
@@ -38,7 +38,7 @@ enum CSSColor {
 extension CSSColor: CustomStringConvertible {
     //Protocol implementation
     //You’re required to implement a getter for a description string property.
-    var description: String {
+    public var description: String {
         switch self {
         case .named(let colorName):
             return colorName.rawValue
