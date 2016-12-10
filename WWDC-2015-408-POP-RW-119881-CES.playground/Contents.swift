@@ -232,6 +232,49 @@ struct Circle : Drawable {
     }
 }
 
+//Structs/Classes - computed properties
+//implementing a computed property based on the radius
+extension Circle {
+    var diameter: Double {
+        get {
+            return radius * 2
+        }
+        set {
+            radius = newValue / 2
+        }
+    }
+    
+    //Struct - Mutation
+    //is ok if this function wants to mutate the struct.
+    //change stored properties on the struct
+    mutating func shift(x: Double, y: Double) {
+        center.x += x
+        center.y += y
+    }
+}
+
+//Struct - extension - initializer
+extension Circle {
+    init(center point: (Double, Double), radius length: Double) {
+        self.center = point
+        self.radius = length
+    }
+}
+
+//Struc - Protocol - implementation - Adopting a Protocol
+//value type
+struct Polygon : Drawable {
+    //value type
+    var corners: [CGPoint] = []
+    
+    func draw(renderer: Renderer) {
+        renderer.moveTo(position: corners.last!)
+        for point in corners {
+            renderer.lineTo(position: point)
+        }
+    }
+}
+
 struct Rectangle : Drawable {
     var strokeWidth = 5
     var strokeColor = CSSColor.named(.teal)
@@ -250,19 +293,41 @@ extension Rectangle {
     }
 }
 
-//Struc - Protocol - implementation - Adopting a Protocol
-//value type
-struct Polygon : Drawable {
-    //value type
-    var corners: [CGPoint] = []
-    
-    func draw(renderer: Renderer) {
-        renderer.moveTo(position: corners.last!)
-        for point in corners {
-            renderer.lineTo(position: point)
-        }
+//Classes/Structs - Retroactive Modeling and Type Constraining
+//retroactive modeling.
+//- It lets you extend behavior of a model type even if you don’t have the source code for it.
+
+//Goal - create a protocol for clased shapes
+
+extension Rectangle {
+    var area: Double {
+        return size.width * size.height
+    }
+    var perimeter: Double {
+        return 2 * (size.width + size.height)
     }
 }
+
+//Protocols - formalizing closed shape related methods into a protocol
+protocol ClosedShape {
+    var area: Double { get }
+    var perimeter: Double { get }
+}
+
+extension Circle: ClosedShape {
+    // Example of getter-only computed properties
+    var area: Double {
+        return Double(radius) * Double(radius) * Double.pi
+    }
+    
+    var perimeter: Double {
+        return 2 * Double(radius) * Double.pi
+    }
+}
+
+//C.S - Protocol - retroactively adopting the protocol
+extension Rectangle: ClosedShape {}
+
 
 //Class - Adopting the Renderer protocol
 final class SVGRenderer : Renderer {
@@ -333,68 +398,6 @@ struct SVGDiagram : Drawable {
     }
 }
 
-///////////////////////////////////////////////////////
-//Classes
-///////////////////////////////////////////////////////
-//let me define
-//- base classes
-//- derived classes
-
-//Structs/Classes - computed properties
-//implementing a computed property based on the radius
-extension Circle {
-    var diameter: Double {
-        get {
-            return radius * 2
-        }
-        set {
-            radius = newValue / 2
-        }
-    }
-    
-    //Struct - Mutation
-    //is ok if this function wants to mutate the struct.
-    //change stored properties on the struct
-    mutating func shift(x: Double, y: Double) {
-        center.x += x
-        center.y += y
-    }
-}
-
-//Classes/Structs - Retroactive Modeling and Type Constraining
-//retroactive modeling.
-//- It lets you extend behavior of a model type even if you don’t have the source code for it.
-
-//Goal - create a protocol for clased shapes
-
-extension Rectangle {
-    var area: Double {
-        return size.width * size.height
-    }
-    var perimeter: Double {
-        return 2 * (size.width + size.height)
-    }
-}
-
-//Protocols - formalizing closed shape related methods into a protocol
-protocol ClosedShape {
-    var area: Double { get }
-    var perimeter: Double { get }
-}
-
-extension Circle: ClosedShape {
-    // Example of getter-only computed properties
-    var area: Double {
-        return Double(radius) * Double(radius) * Double.pi
-    }
-    
-    var perimeter: Double {
-        return 2 * Double(radius) * Double.pi
-    }
-}
-
-//C.S - Protocol - retroactively adopting the protocol
-extension Rectangle: ClosedShape {}
 
 var circle = Circle()
 //print("circle diameter: \(circle.diameter)")
@@ -441,18 +444,6 @@ struct Diagram : Drawable {
         for f in drawables {
             f.draw(renderer: renderer)
         }
-    }
-    
-//    mutating func append(other: Drawable) {
-//        elements.append(other)
-//    }
-}
-
-//Struct - extension - initializer
-extension Circle {
-    init(center point: (Double, Double), radius length: Double) {
-        self.center = point
-        self.radius = length
     }
 }
 
