@@ -125,6 +125,7 @@ struct ScaledRenderer : Renderer {
     }
 }
 
+//Is this an addapter pattern 
 /// A `Drawable` that scales an instance of `Base`
 //Generics
 struct Scaled<Base: Drawable> : Drawable {
@@ -271,6 +272,23 @@ extension Circle: ClosedShape {
 //now can be part of an array of closedShapes
 extension Rectangle: ClosedShape {}
 
+// A bubble is made of an outer circle and an inner highlight
+struct Bubble : Drawable {
+    func draw(renderer r: Renderer) {
+        //better way to draw a circle than arcAt 
+        r.circleAt(center: center, radius: radius)
+        r.circleAt(center: highlightCenter, radius: highlightRadius)
+    }
+    
+    var center: CGPoint
+    var radius: CGFloat
+    var highlightCenter: CGPoint {
+        return CGPoint(x: center.x + 0.2 * radius, y: center.y - 0.4 * radius)
+    }
+    var highlightRadius: CGFloat {
+        return radius * 0.33
+    }
+}
 
 //C - Adopting the Renderer protocol
 final class SVGRenderer : Renderer {
@@ -446,8 +464,9 @@ var triangle = Polygon(corners: [CGPoint(x: 187.5, y: 427.25),
 var diagram = Diagram(drawables: [circle408, triangle])
 
 //why does it works? bacause value type.
-var insideDiagram = diagram
-diagram.append(drawable: Scaled(scale: 0.5, subject: insideDiagram))
+var insideDiagram = Scaled(scale: 0.5, subject: diagram)
+//what if I want to move the whole diagram?
+diagram.append(drawable: insideDiagram)
 diagram.draw(renderer: TestRenderer())
 
 //http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi

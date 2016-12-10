@@ -16,6 +16,7 @@ import UIKit
 //hide ColorName within a CSSColor model
 
 //Enum - Associated Values
+//http://stackoverflow.com/questions/29637444/xcode-playgrounds-cant-access-swift-files-in-sources-folder
 public enum CSSColor {
     case named(ColorName)
     case rgb(UInt8, UInt8, UInt8)
