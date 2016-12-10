@@ -173,6 +173,8 @@ final class SVGContext : DrawingContext {
     
     //Getter
     var htmlString: String {
+        //        http://www.w3schools.com/html/html5_svg.asp
+        //        http://www.w3schools.com/html/tryit.asp?filename=tryhtml_svg_rect
         return "<!DOCTYPE html>" +
                     "<head>" +
                         "<style>body { background-color: #555555; }</style>" +
@@ -429,6 +431,7 @@ class CoreGraphicsDiagramView : UIView {
     var draw: (CGContext)->() = { _ in () }
 }
 
+//https://github.com/alskipp/Swift-Diagram-Playgrounds/tree/master - helps me to solve the drawing with CG issue. 
 /// Shows a `UIView` in the current playground that draws itself by invoking
 /// `draw` on a `CGContext`, then stroking the context's current path in a
 /// pleasing light blue.
@@ -440,6 +443,7 @@ class CoreGraphicsDiagramView : UIView {
 //}
 
 let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 375, height: 200))
+//webView.isOpaque = true
 webView.loadHTMLString(htmlString, baseURL: nil)
 //webView.backgroundColor = UIColor.red
 //this backgroundColor did not appear because the html takes precedence 
