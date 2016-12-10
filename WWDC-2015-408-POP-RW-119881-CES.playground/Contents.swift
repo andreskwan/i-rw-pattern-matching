@@ -104,6 +104,38 @@ extension TestRenderer {
     }
 }
 
+/// A `Renderer` that passes drawing commands through to some `base`
+/// renderer, after applying uniform scaling to all distances.
+struct ScaledRenderer : Renderer {
+    let base: Renderer
+    let scale: CGFloat
+    
+    func moveTo(position p: CGPoint) {
+        base.moveTo(position: CGPoint(x: p.x * scale, y: p.y * scale))
+    }
+    
+    func lineTo(position p: CGPoint) {
+        base.lineTo(position: CGPoint(x: p.x * scale, y: p.y * scale))
+    }
+    
+    func arcAt(center: CGPoint, radius: CGFloat, startAngle: CGFloat, endAngle: CGFloat) {
+        let scaledCenter = CGPoint(x: center.x * scale, y: center.y * scale)
+        base.arcAt(center: scaledCenter, radius: radius * scale, startAngle: startAngle, endAngle: endAngle
+        )
+    }
+}
+
+/// A `Drawable` that scales an instance of `Base`
+//Generics
+struct Scaled<Base: Drawable> : Drawable {
+    var scale: CGFloat
+    var subject: Base
+    
+    func draw(renderer: Renderer) {
+        subject.draw(renderer: ScaledRenderer(base: renderer, scale: scale))
+    }
+}
+
 //Protocol - I want my shapes to be drawable
 //defines what it means to be Drawable
 //no drawing technology is specified
@@ -235,6 +267,8 @@ extension Circle: ClosedShape {
 }
 
 //C.S - Protocol - retroactively adopting the protocol
+//implementing to conform is not enough 
+//now can be part of an array of closedShapes
 extension Rectangle: ClosedShape {}
 
 
@@ -299,15 +333,14 @@ struct SVGDiagram : Drawable {
     //TestRenderer - use it to test it 
     //SVGRenderer - to
     func draw(renderer: Renderer) {
-        for f in drawables {
-            f.draw(renderer: renderer)
+        for drawable in drawables {
+            drawable.draw(renderer: renderer)
         }
     }
 }
 
 
 var circle = Circle()
-
 var rectangle = Rectangle()
 
 //Function - Protocol - func adopting ClosedShape protocol
@@ -414,14 +447,14 @@ var diagram = Diagram(drawables: [circle408, triangle])
 
 //why does it works? bacause value type.
 var insideDiagram = diagram
-diagram.append(drawable: insideDiagram)
+diagram.append(drawable: Scaled(scale: 0.5, subject: insideDiagram))
 diagram.draw(renderer: TestRenderer())
 
 //http://stackoverflow.com/questions/37097448/playground-xcode-swift-wkwebview-scripting-failed-to-obtain-sandbox-extensi
-let svgDrawingArea = CGRect(x: 0.0, y: 0.0, width: 375.0, height: 200.0)
-let webView = WKWebView(frame: svgDrawingArea)
-//loadHTMLString is the renderer for SVGRenderer! 
-webView.loadHTMLString(htmlString, baseURL: nil)
+//let svgDrawingArea = CGRect(x: 0.0, y: 0.0, width: 375.0, height: 200.0)
+//let webView = WKWebView(frame: svgDrawingArea)
+//loadHTMLString is the renderer for SVGRenderer!
+//webView.loadHTMLString(htmlString, baseURL: nil)
 ////webView.backgroundColor = UIColor.red
 ////this backgroundColor did not appear because the html takes precedence
 ////PlaygroundPage.current.liveView = view
@@ -429,7 +462,7 @@ webView.loadHTMLString(htmlString, baseURL: nil)
 let drawingArea = CGRect(x: 100.0, y: 0.0, width: 375.0, height: 667.0)
 let diagramView = CoreGraphicsDiagramView(frame: drawingArea)
 diagramView.draw = { diagram.draw(renderer: $0) }
-diagramView.addSubview(webView)
+//diagramView.addSubview(webView)
 diagramView.setNeedsDisplay()
 PlaygroundPage.current.liveView = diagramView
 ////showCoreGraphicsDiagram("Diagram") { diagram.draw(renderer: $0) }

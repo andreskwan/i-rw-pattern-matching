@@ -15,6 +15,12 @@ import UIKit
 //ColorName is only ever used in the context of a CSSColor.
 //hide ColorName within a CSSColor model
 
+//Enum - Associated Values
+public enum CSSColor {
+    case named(ColorName)
+    case rgb(UInt8, UInt8, UInt8)
+}
+
 extension CSSColor {
     //CSS colors
     // Enum String as a RawRepresentable
@@ -23,11 +29,6 @@ extension CSSColor {
     }
 }
 
-//Enum - Associated Values
-public enum CSSColor {
-    case named(ColorName)
-    case rgb(UInt8, UInt8, UInt8)
-}
 
 //Enum - Namespaces in action
 //- A namespace in Swift is a named region of a program
@@ -63,6 +64,17 @@ extension CSSColor {
 let color3 = CSSColor(gray: 0xaa)
 //print(color3)
 
+public protocol CSSColoreable {
+    var strokeWidth : Int {set get}
+    var strokeColor : CSSColor {set get}
+    var fillColor : CSSColor {set get}
+}
+
+extension CSSColoreable {
+//    var strokeWidth = 5
+//    var strokeColor = CSSColor.named(.red)
+//    var fillColor = CSSColor.named(.yellow)
+}
 
 //Enums can be set up as pure namespaces that users can’t accidentally instantiate.
 //Since the Math enum contains no cases, and it’s illegal to add new cases in an extension,
